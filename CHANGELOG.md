@@ -7,6 +7,22 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [1.1.0] - 2026-11-01
+
+### Añadido
+
+- Presupuesto en el tutorial del primer ingreso.
+
+### Cambiado
+
+- Cada pantalla se pinta en su propio contenedor: una respuesta lenta ya no pisa la pestaña que abriste después.
+- Al cambiar de usuario en el mismo navegador se reinician filtros, pestaña y selecciones.
+- Servicios y vistas simplificados.
+
+### Corregido
+
+- Tarjetas y pantalla de acceso alineadas con el esquema real de la base de datos.
+
 ## [1.0.0] - 2026-10-31
 
 ### Añadido
@@ -19,4 +35,5 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[1.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/S3scobar/luka-finanzas/releases/tag/v1.0.0
