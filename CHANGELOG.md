@@ -7,6 +7,14 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [1.2.0] - 2026-11-03
+
+### Añadido
+
+- Iconos y colores a elegir para cada billetera.
+- Ingreso con deslizador: «desliza para ingresar».
+- Navegación entre pestañas deslizando el dedo.
+
 ## [1.1.0] - 2026-11-01
 
 ### Añadido
@@ -35,5 +43,6 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[1.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/S3scobar/luka-finanzas/releases/tag/v1.0.0
