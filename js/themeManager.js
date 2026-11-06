@@ -72,7 +72,45 @@ export const themeManager = {
     paint(theme);
   },
 
+  // El nuevo tema se riega en círculo desde el botón hasta cubrir toda la pantalla
   toggle() {
-    this.set(this.current === "dark" ? "light" : "dark");
+    const next = this.current === "dark" ? "light" : "dark";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      this.set(next);
+      return;
+    }
+
+    if (!document.startViewTransition || !toggleButton) {
+      const root = document.documentElement;
+      root.classList.add("theme-fading");
+      this.set(next);
+      setTimeout(() => root.classList.remove("theme-fading"), 320);
+      return;
+    }
+
+    const box = toggleButton.getBoundingClientRect();
+    const x = box.left + box.width / 2;
+    const y = box.top + box.height / 2;
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    const isMobile = window.innerWidth < 768;
+    const duration = isMobile ? 380 : 480;
+
+    const transition = document.startViewTransition(() => {
+      this.set(next);
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+        { duration, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)", pseudoElement: "::view-transition-new(root)" }
+      );
+    }).catch(() => {});
+
+    // El icono gira al cambiar (sol <-> luna)
+    toggleButton.classList.remove("theme-icon-spin");
+    void toggleButton.offsetWidth;
+    toggleButton.classList.add("theme-icon-spin");
   }
 };

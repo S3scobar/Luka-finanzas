@@ -7,6 +7,27 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [2.0.0] - 2026-11-06
+
+### Añadido
+
+- Préstamos de apps de crédito, bancos y personas, con cuota y saldo.
+- Cambio de tema claro/oscuro con animación circular.
+- Aviso en Inicio del pago de préstamos del mes.
+
+### Cambiado
+
+- Rediseño completo con el material liquid glass: barra, píldora líquida en las pestañas, modales, tarjetas, botón flotante y deslizador.
+- **Incompatible:** la pestaña «Tarjetas» pasa a ser «Crédito» y reúne Tarjetas y Préstamos.
+
+### Corregido
+
+- Cabeceras de caché de index.html y vercel.json.
+
+### Rendimiento
+
+- El cambio de tema es más fluido: se pausan transiciones, desenfoque y fondo animado mientras dura la animación.
+
 ## [1.2.0] - 2026-11-03
 
 ### Añadido
@@ -43,6 +64,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[2.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/S3scobar/luka-finanzas/releases/tag/v1.0.0
