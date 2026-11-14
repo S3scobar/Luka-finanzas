@@ -12,6 +12,9 @@ import { tutorialTour } from "./components/tutorialTour.js";
 import { themeManager } from "./themeManager.js";
 import { swipeNav } from "./components/swipeNav.js";
 import { liquidNav } from "./components/liquidNav.js";
+import { installPrompt } from "./components/installPrompt.js";
+import { initSplash } from "./components/splash.js";
+import { glassLight } from "./components/glassLight.js";
 
 const app = document.getElementById("app");
 const navTabs = document.getElementById("nav-tabs");
@@ -35,8 +38,11 @@ let currentTab = "dashboard";
 let activeUserId = null;
 let initPromise = null;
 
+initSplash();
+glassLight.init();
 themeManager.init(themeBtn);
 liquidNav.init(navTabs);
+installPrompt.init();
 
 // Los modales brotan desde el punto donde se tocó (css/glass.css define la animación)
 let lastPointer = null;
