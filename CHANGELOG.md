@@ -7,6 +7,18 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [2.1.0] - 2026-11-14
+
+### Añadido
+
+- La app se puede instalar (PWA) con botón de instalación.
+- Pantalla de apertura animada.
+- Liquid glass v2: superficies translúcidas con luz especular.
+
+### Cambiado
+
+- Ajustes de UX en Billeteras; el deslizador marca con borde verde cuando se completa.
+
 ## [2.0.0] - 2026-11-06
 
 ### Añadido
@@ -64,6 +76,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[2.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.0.0...v1.1.0
