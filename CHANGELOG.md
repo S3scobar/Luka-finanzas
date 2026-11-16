@@ -7,6 +7,26 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [2.2.0] - 2026-11-15
+
+### Añadido
+
+- Inicio de sesión con Google.
+- Bloqueo de la app con Face ID o huella (WebAuthn).
+- Esqueletos de carga mientras se piden los datos.
+- Registro de la última actividad para limpiar cuentas inactivas.
+- Pruebas automáticas de la lógica de préstamos y CI en GitHub Actions.
+- Documentación del esquema de la base de datos y vista previa en el README.
+
+### Corregido
+
+- El último movimiento registrado aparece primero dentro del mismo día.
+- El service worker prioriza la red para js y css y no mezcla versiones tras un despliegue.
+
+### Seguridad
+
+- Migración de refuerzo de seguridad e índices aplicada en Supabase.
+
 ## [2.1.0] - 2026-11-14
 
 ### Añadido
@@ -76,6 +96,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[2.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v1.1.0...v1.2.0
