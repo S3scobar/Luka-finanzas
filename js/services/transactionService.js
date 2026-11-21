@@ -5,7 +5,7 @@ import { walletService } from "./walletService.js";
 const TRANSACTION_COLUMNS = `
   *,
   category:categories(name, icon, color),
-  wallet:wallets(name, color, icon)
+  wallet:wallets(name, color, icon, currency)
 `;
 
 // Supabase devuelve como máximo 1000 filas por petición: se pide por páginas

@@ -10,7 +10,7 @@ create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
   full_name text,
-  currency text default 'COP',
+  currency text not null default 'COP' check (currency in ('COP', 'USD', 'EUR')),
   created_at timestamptz not null default timezone('utc', now())
 );
 
@@ -21,6 +21,7 @@ create table public.wallets (
   balance numeric not null default 0.00,
   color text default '#3B82F6',
   icon text default 'fa-wallet',
+  currency text not null default 'COP' check (currency in ('COP', 'USD', 'EUR')),
   created_at timestamptz not null default timezone('utc', now())
 );
 

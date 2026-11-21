@@ -7,6 +7,8 @@ import { creditView } from "./views/creditView.js";
 import { subscriptionsView } from "./views/subscriptionsView.js";
 import { savingsView } from "./views/savingsView.js";
 import { analyticsView } from "./views/analyticsView.js";
+import { converterView } from "./views/converterView.js";
+import { resetCurrencyState } from "./services/currencyService.js";
 import { budgetsView } from "./views/budgetsView.js";
 import { tutorialTour } from "./components/tutorialTour.js";
 import { themeManager } from "./themeManager.js";
@@ -34,7 +36,8 @@ const VIEWS = {
   cards: creditView,
   subs: subscriptionsView,
   savings: savingsView,
-  analytics: analyticsView
+  analytics: analyticsView,
+  converter: converterView
 };
 
 let currentTab = "dashboard";
@@ -99,6 +102,7 @@ function switchView(tab) {
 
 function resetViews() {
   Object.values(VIEWS).forEach(view => view.resetState?.());
+  resetCurrencyState();
 }
 
 function setLoggedInUi(isLoggedIn) {

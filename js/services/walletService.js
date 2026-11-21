@@ -17,7 +17,7 @@ export const walletService = {
     return data || [];
   },
 
-  async createWallet({ name, balance = 0, color = "#3B82F6", icon = "fa-wallet" }) {
+  async createWallet({ name, balance = 0, color = "#3B82F6", icon = "fa-wallet", currency = "COP" }) {
     const userId = await requireUserId();
 
     const { data, error } = await supabase
@@ -28,7 +28,8 @@ export const walletService = {
           name: name.trim(),
           balance: parseFloat(balance) || 0,
           color,
-          icon
+          icon,
+          currency
         }
       ])
       .select()
