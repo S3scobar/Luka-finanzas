@@ -105,11 +105,18 @@ La pestaña **Crédito** tiene dos secciones, porque funcionan distinto.
 * **Consolidado anual:** comparativa mes a mes de ingresos vs. egresos.
 * Navegación entre meses y años.
 
-### 3.8. Tutorial interactivo
+### 3.8. Conversor y monedas
+* Cada billetera tiene su moneda (COP, USD o EUR), elegida al crearla.
+* Los totales de Inicio y Billeteras se muestran en la moneda base de la cuenta, convirtiendo cada billetera con la tasa del día.
+* Pestaña Conversor: convierte entre las tres monedas, muestra las tasas y permite cambiar la moneda base.
+* Las tasas vienen de open.er-api.com, se guardan 6 horas en el dispositivo y, sin conexión, se usan tasas aproximadas.
+* Límites: presupuestos y análisis aún suman los montos sin convertir, y solo se transfiere entre cuentas de la misma moneda.
+
+### 3.9. Tutorial interactivo
 * Pantalla de apertura animada (logo, "LUKA" y lema) una vez por sesión; un toque la salta y se omite con "reducir movimiento" (`css/splash.css`, `js/components/splash.js`).
 * Guía paso a paso por cada pestaña (Inicio, Billeteras, Presupuesto, Crédito, Suscripciones, Ahorros y Análisis), disponible desde un botón flotante.
 
-### 3.9. Acceso y bloqueo con Face ID
+### 3.10. Acceso y bloqueo con Face ID
 * Ingreso con celular, correo o Google, con un deslizador «desliza para ingresar».
 * **Face ID / huella (opcional):** tras iniciar sesión se ofrece activar el desbloqueo biométrico (WebAuthn con autenticador de la plataforma, `js/services/biometricService.js`). Con él activo, la app pide la verificación al abrirse y al volver tras más de un minuto en segundo plano. Es un candado local sobre la sesión ya guardada: no inicia sesión por sí solo ni guarda datos biométricos. Cerrar sesión lo desactiva.
 * Cada celular puede vincularse a un máximo de 2 cuentas.
