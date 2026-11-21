@@ -7,6 +7,13 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [2.4.0] - 2026-11-21
+
+### Añadido
+
+- Conversor de moneda.
+- Moneda por billetera: COP, USD o EUR.
+
 ## [2.3.0] - 2026-11-16
 
 ### Añadido
@@ -108,6 +115,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[2.4.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.0.0...v2.1.0
