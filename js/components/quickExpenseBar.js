@@ -1,4 +1,5 @@
 // js/components/quickExpenseBar.js
+import { CURRENCIES } from "../services/currencyService.js";
 import { transactionService } from "../services/transactionService.js";
 import { creditCardService } from "../services/creditCardService.js";
 import { modalCategoryPicker } from "./modalCategoryPicker.js";
@@ -129,7 +130,7 @@ export const quickExpenseBar = {
               <input type="text" id="quick-title" value="${escapeHtml(savedTitle)}" placeholder="${activeType === "expense" ? "¿En qué gastaste? (Ej. Almuerzo)" : "¿Concepto del ingreso? (Ej. Sueldo)"}" required autocomplete="off" />
             </div>
             <div class="input-field input-amount">
-              <span class="currency-symbol">$</span>
+              <span class="currency-symbol">${CURRENCIES[wallets.find(w => w.id === selectedWalletId)?.currency]?.symbol || "$"}</span>
               <input type="text" id="quick-amount" value="${escapeHtml(savedAmount)}" inputmode="numeric" placeholder="0" required autocomplete="off" />
             </div>
           </div>
