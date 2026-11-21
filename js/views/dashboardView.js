@@ -9,6 +9,7 @@ import { quickExpenseBar } from "../components/quickExpenseBar.js";
 import { escapeHtml, resolveContainer, notifyError, formatShortDate } from "../utils.js";
 import { skeletonHtml } from "../components/skeleton.js";
 import { iconHtml } from "../icons.js";
+import { getRates, getBaseCurrency, convert, formatMoney } from "../services/currencyService.js";
 
 export const dashboardView = {
   showAllTransactions: false,
@@ -34,17 +35,22 @@ export const dashboardView = {
       // Las billeteras de tarjetas guardan el cupo disponible, no dinero propio
       const creditCardWalletIds = new Set((creditCards || []).map(cc => cc.wallet_id));
 
+      // Cada cuenta tiene su moneda; los totales se muestran en la moneda base
+      const [{ rates }, baseCurrency] = await Promise.all([getRates(), getBaseCurrency()]);
+      const walletCurrency = new Map((wallets || []).map(w => [w.id, w.currency]));
+      const toBase = (amount, walletId) => convert(amount, walletCurrency.get(walletId), baseCurrency, rates);
+
       const totalBalance = (wallets || [])
         .filter(w => !creditCardWalletIds.has(w.id))
-        .reduce((sum, w) => sum + (parseFloat(w.balance) || 0), 0);
+        .reduce((sum, w) => sum + toBase(parseFloat(w.balance) || 0, w.id), 0);
 
       const totalIncome = transactions
         .filter(t => t.type === "income")
-        .reduce((sum, t) => sum + Number(t.amount), 0);
+        .reduce((sum, t) => sum + toBase(t.amount, t.wallet_id), 0);
 
       const totalExpense = transactions
         .filter(t => t.type === "expense")
-        .reduce((sum, t) => sum + Number(t.amount), 0);
+        .reduce((sum, t) => sum + toBase(t.amount, t.wallet_id), 0);
 
       const netBalance = totalIncome - totalExpense;
 
@@ -53,20 +59,20 @@ export const dashboardView = {
           <div class="summary-cards-grid">
             <div class="metric-card card-total">
               <span class="metric-label">${iconHtml("fa-wallet")} Saldo Total</span>
-              <span class="metric-value text-primary">$ ${totalBalance.toLocaleString("es-CO", { maximumFractionDigits: 0 })}</span>
+              <span class="metric-value text-primary">${formatMoney(totalBalance, baseCurrency)}</span>
             </div>
             <div class="metric-card card-income">
               <span class="metric-label"><i class="ph-bold ph-arrow-down-left text-success"></i> Ingresos</span>
-              <span class="metric-value text-success">$ ${totalIncome.toLocaleString("es-CO", { maximumFractionDigits: 0 })}</span>
+              <span class="metric-value text-success">${formatMoney(totalIncome, baseCurrency)}</span>
             </div>
             <div class="metric-card card-expense">
               <span class="metric-label"><i class="ph-bold ph-arrow-up-right text-danger"></i> Gastos</span>
-              <span class="metric-value text-danger">$ ${totalExpense.toLocaleString("es-CO", { maximumFractionDigits: 0 })}</span>
+              <span class="metric-value text-danger">${formatMoney(totalExpense, baseCurrency)}</span>
             </div>
             <div class="metric-card card-balance">
               <span class="metric-label"><i class="ph-duotone ph-scales"></i> Balance</span>
               <span class="metric-value ${netBalance < 0 ? "text-danger" : "text-balance"}">
-                $ ${netBalance.toLocaleString("es-CO", { maximumFractionDigits: 0 })}
+                ${formatMoney(netBalance, baseCurrency)}
               </span>
             </div>
           </div>
@@ -215,7 +221,7 @@ export const dashboardView = {
                     </div>
                   </div>
                   <div class="trans-amount ${isExpense ? "amount-expense" : "amount-income"}">
-                    ${isExpense ? "-" : "+"} $ ${Number(t.amount).toLocaleString("es-CO", { maximumFractionDigits: 0 })}
+                    ${isExpense ? "-" : "+"} ${formatMoney(t.amount, t.wallet?.currency)}
                   </div>
                   <button class="btn-delete-trans" data-id="${t.id}" title="Eliminar movimiento">
                     <i class="ph-bold ph-trash"></i>

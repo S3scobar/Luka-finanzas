@@ -6,6 +6,7 @@ import { escapeHtml, resolveContainer, notifyError } from "../utils.js";
 import { CATEGORY_ICON_GROUPS, WALLET_ICONS, iconPickerHtml, bindIconPicker, iconHtml } from "../icons.js";
 import { colorSwatchesHtml, bindColorSwatches } from "../colorSwatches.js";
 import { skeletonHtml } from "../components/skeleton.js";
+import { getRates, getBaseCurrency, convert, formatMoney, currencyOptionsHtml, CURRENCIES } from "../services/currencyService.js";
 
 export const walletsView = {
   async render(target) {
@@ -13,9 +14,11 @@ export const walletsView = {
     container.innerHTML = skeletonHtml();
 
     try {
-      const [wallets, allCategories] = await Promise.all([
+      const [wallets, allCategories, { rates }, baseCurrency] = await Promise.all([
         walletService.getWallets(),
-        categoryService.getCategories()
+        categoryService.getCategories(),
+        getRates(),
+        getBaseCurrency()
       ]);
 
       let activeCategoryTab = "expense";
@@ -27,8 +30,10 @@ export const walletsView = {
           .sort((a, b) => a.favorite_order - b.favorite_order)
           .map(c => c.id);
 
-        const totalBalance = wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0);
-        const fmt = (n) => Number(n).toLocaleString("es-CO", { maximumFractionDigits: 0 });
+        // El total se muestra en la moneda base; cada cuenta conserva la suya
+        const inBase = (w) => convert(w.balance, w.currency, baseCurrency, rates);
+        const totalBalance = wallets.reduce((sum, w) => sum + inBase(w), 0);
+        const hasForeign = wallets.some(w => w.currency !== baseCurrency);
 
         container.innerHTML = `
           <div class="wallets-module">
@@ -52,8 +57,8 @@ export const walletsView = {
 
               <div class="wallets-total">
                 <span class="wallets-total-label">Saldo total disponible</span>
-                <span class="wallets-total-value wallet-balance">$ ${fmt(totalBalance)}</span>
-                <span class="wallets-total-meta">${wallets.length} ${wallets.length === 1 ? "cuenta" : "cuentas"}</span>
+                <span class="wallets-total-value wallet-balance">${formatMoney(totalBalance, baseCurrency)}</span>
+                <span class="wallets-total-meta">${wallets.length} ${wallets.length === 1 ? "cuenta" : "cuentas"}${hasForeign ? ` · convertido a ${baseCurrency}` : ""}</span>
               </div>
 
               ${wallets.length === 0 ? `
@@ -64,7 +69,7 @@ export const walletsView = {
               ` : `
                 <div class="wallets-grid">
                   ${wallets.map(w => {
-                    const share = totalBalance > 0 ? Math.round((Number(w.balance || 0) / totalBalance) * 100) : 0;
+                    const share = totalBalance > 0 ? Math.round((inBase(w) / totalBalance) * 100) : 0;
                     return `
                     <div class="wallet-item" style="--wallet-accent: ${w.color};">
                       <div class="wallet-item-icon" style="background-color: ${w.color}1F; color: ${w.color};">
@@ -72,8 +77,8 @@ export const walletsView = {
                       </div>
                       <div class="wallet-item-info">
                         <span class="wallet-name">${escapeHtml(w.name)}</span>
-                        <span class="wallet-balance">$ ${fmt(w.balance)}</span>
-                        <span class="wallet-share">${share}% del total</span>
+                        <span class="wallet-balance">${formatMoney(w.balance, w.currency)}</span>
+                        <span class="wallet-share">${w.currency !== baseCurrency ? `≈ ${formatMoney(inBase(w), baseCurrency)} · ` : ""}${share}% del total</span>
                       </div>
                       <div class="wallet-actions">
                         <button class="btn-edit-wallet" data-id="${w.id}" title="Editar saldo o datos">
@@ -163,6 +168,7 @@ export const walletsView = {
         container.querySelector("#btn-show-wallet-form").addEventListener("click", () => {
           showWalletModal({
             wallet: null,
+            defaultCurrency: baseCurrency,
             onSave: () => walletsView.render(target)
           });
         });
@@ -325,7 +331,7 @@ function showTransferModal({ wallets, onSave }) {
           <select id="transfer-from-wallet" required>
             ${wallets.map(w => `
               <option value="${w.id}" ${w.id === defaultFrom ? "selected" : ""}>
-                ${escapeHtml(w.name)} ($ ${Number(w.balance).toLocaleString("es-CO")})
+                ${escapeHtml(w.name)} (${formatMoney(w.balance, w.currency)})
               </option>
             `).join("")}
           </select>
@@ -336,7 +342,7 @@ function showTransferModal({ wallets, onSave }) {
           <select id="transfer-to-wallet" required>
             ${wallets.map(w => `
               <option value="${w.id}" ${w.id === defaultTo ? "selected" : ""}>
-                ${escapeHtml(w.name)} ($ ${Number(w.balance).toLocaleString("es-CO")})
+                ${escapeHtml(w.name)} (${formatMoney(w.balance, w.currency)})
               </option>
             `).join("")}
           </select>
@@ -377,6 +383,13 @@ function showTransferModal({ wallets, onSave }) {
     const to_wallet_id = modal.querySelector("#transfer-to-wallet").value;
     const amount = parseCurrencyInput(modal.querySelector("#transfer-amount").value);
     const errorDiv = modal.querySelector("#transfer-modal-error");
+    const fromW = wallets.find(w => w.id === from_wallet_id);
+    const toW = wallets.find(w => w.id === to_wallet_id);
+    if (fromW && toW && fromW.currency !== toW.currency) {
+      errorDiv.textContent = "Las cuentas están en monedas distintas. Por ahora solo se puede transferir entre cuentas de la misma moneda.";
+      errorDiv.style.display = "block";
+      return;
+    }
 
     try {
       await walletService.transfer({
@@ -393,7 +406,7 @@ function showTransferModal({ wallets, onSave }) {
   });
 }
 
-function showWalletModal({ wallet = null, onSave }) {
+function showWalletModal({ wallet = null, defaultCurrency = "COP", onSave }) {
   const isEditing = !!wallet;
   const walletColor = isEditing ? wallet.color : "#3B82F6";
   let selectedWalletIcon = isEditing ? wallet.icon : "fa-wallet";
@@ -414,7 +427,13 @@ function showWalletModal({ wallet = null, onSave }) {
         </div>
 
         <div class="form-group">
-          <label>${isEditing ? "Saldo Actual Disponible ($)" : "Saldo Inicial ($)"}</label>
+          <label>Moneda</label>
+          <select id="modal-wallet-currency" ${isEditing ? "disabled" : ""}>${currencyOptionsHtml(isEditing ? wallet.currency : defaultCurrency)}</select>
+          ${isEditing ? `<small style="color: var(--text-muted); font-size: 0.75rem;">La moneda no se cambia después de crear la cuenta.</small>` : ""}
+        </div>
+
+        <div class="form-group">
+          <label>${isEditing ? "Saldo Actual Disponible" : "Saldo Inicial"} (${isEditing ? wallet.currency : "en la moneda elegida"})</label>
           <input type="text" id="modal-wallet-balance" value="${isEditing ? wallet.balance : "0"}" placeholder="0" required />
         </div>
 
@@ -466,7 +485,7 @@ function showWalletModal({ wallet = null, onSave }) {
       if (isEditing) {
         await walletService.updateWallet(wallet.id, { name, balance, color, icon });
       } else {
-        await walletService.createWallet({ name, balance, color, icon });
+        await walletService.createWallet({ name, balance, color, icon, currency: modal.querySelector("#modal-wallet-currency").value });
       }
       closeModal();
       if (onSave) onSave();
