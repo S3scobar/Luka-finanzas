@@ -8,7 +8,8 @@
       t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
     root.setAttribute("data-theme", t);
-    if (t === "dark") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#0B1220");
+    var c = t === "dark" ? "#0B1220" : "#EEF2F6";
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.setAttribute("content", c); });
   } catch (e) {}
 
   // Apertura: una vez por sesión del navegador, nunca con "reducir movimiento" ni en páginas legales
