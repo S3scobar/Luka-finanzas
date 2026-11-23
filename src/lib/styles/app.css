@@ -355,3 +355,46 @@ button.budget-card .budget-meta { min-width: 0; }
 .purchase-title-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
 .purchase-installment-text { gap: 0.5rem; }
 .purchase-installment-text strong { white-space: nowrap; }
+
+/* -------- Suscripciones (Svelte) -------- */
+.subs-hero { display: grid; gap: 0.5rem; justify-items: start; }
+.subs-hero .budget-hero-amount-row, .subs-hero .budget-hero-progress-track { margin: 0; }
+.subs-hero .budget-hero-footer { width: 100%; }
+.subs-year { margin: 0 0 0.35rem; font-size: 0.88rem; color: var(--text-muted); }
+.subs-year strong { color: var(--text-main); font-variant-numeric: tabular-nums; }
+.subs-fill { background: linear-gradient(90deg, var(--primary), var(--success)); }
+.subs-grid { list-style: none; margin: 0; padding: 0; }
+.sub-card { align-items: center; }
+.sub-date-badge .sub-day { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.sub-amount small { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); }
+.sub-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.75rem; }
+.sub-due {
+  display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.1rem 0.55rem; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 700; color: var(--text-muted); background: var(--bg-hover);
+}
+.sub-due.is-soon { color: var(--warning-text); background: color-mix(in srgb, var(--warning) 16%, transparent); }
+.sub-due.is-late { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.sub-due.is-ok { color: var(--success); background: color-mix(in srgb, var(--success) 14%, transparent); }
+.sub-actions { display: flex; flex-direction: row; align-items: center; gap: 0.35rem; flex: none; }
+.sub-actions .btn { min-height: 40px; }
+.subs-group { padding-block: 0.9rem; }
+.subs-group summary {
+  display: flex; align-items: center; gap: 0.5rem; min-height: 44px; cursor: pointer;
+  font-weight: 700; color: var(--text-main); list-style: none;
+}
+.subs-group summary::-webkit-details-marker { display: none; }
+.subs-group summary .badge-count { margin-left: auto; }
+.subs-group[open] summary { margin-bottom: 0.75rem; }
+.subs-done { padding-block: 1.25rem; }
+.sheet-secondary { margin-top: 0.75rem; grid-template-columns: 1fr 1fr; }
+.sub-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.85rem; }
+.sub-details { min-width: 0; }
+.sub-name { overflow-wrap: anywhere; }
+.sub-date-badge { min-width: 56px; display: grid; justify-items: center; gap: 0; line-height: 1.1; }
+.sub-date-badge small { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.sub-due { white-space: nowrap; }
+.sub-actions { margin: 0; }
+.sub-card { align-items: start; }
+.sub-actions { align-self: start; }
+.sub-pay { justify-self: start; align-self: flex-start; margin-top: 0.45rem; min-height: 40px; padding-inline: 1rem; }
+.sub-pay { white-space: nowrap; gap: 0.35rem; }
