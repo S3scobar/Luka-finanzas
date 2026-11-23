@@ -126,6 +126,8 @@ main:focus { outline: none; }
 }
 
 /* -------- Perfil (hoja de vidrio con <dialog>) -------- */
+/* .modal-content fija display en otras hojas: sin esto el diálogo cerrado seguía visible */
+.profile-sheet:not([open]) { display: none !important; }
 .profile-sheet[open] {
   width: min(440px, calc(100% - 2rem));
   max-height: min(88dvh, 760px);
