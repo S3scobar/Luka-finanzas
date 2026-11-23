@@ -196,3 +196,20 @@ main:focus { outline: none; }
 }
 .zero-interest-wrap input { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
 .sheet .modal-categories-grid { margin-top: 1rem; }
+
+/* -------- Billeteras (Svelte) -------- */
+.form-group .form-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.wallets-grid, .categories-selection-grid { list-style: none; margin: 0; padding: 0; }
+.category-manage-card { cursor: default; }
+/* La insignia de favorita ahora es un botón: área táctil de 44px sin agrandar el círculo visible */
+button.fav-badge {
+  top: 2px; right: 2px; width: 30px; height: 30px; padding: 0;
+  cursor: pointer; font: inherit; font-size: 0.75rem; font-weight: 800;
+  background-clip: content-box; border: 5px solid transparent; box-sizing: border-box;
+  transition: transform 0.25s var(--g-spring, ease), background-color 0.2s ease;
+}
+button.fav-badge::after { content: ""; position: absolute; inset: -7px; }
+button.fav-badge:active { transform: scale(0.88); }
+.category-manage-card.is-selected .fav-badge { background-color: var(--warning); color: #fff; }
+.sheet-submit { margin-top: 1.25rem; min-height: 48px; }
+.sheet .cat-preview { margin-top: 1rem; }
