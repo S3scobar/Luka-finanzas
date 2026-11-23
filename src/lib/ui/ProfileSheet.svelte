@@ -122,7 +122,7 @@
 	}
 </script>
 
-<dialog bind:this={dialog} class="modal-content profile-sheet" aria-labelledby="profile-title" closedby="any">
+<dialog bind:this={dialog} class="modal-content sheet profile-sheet" aria-labelledby="profile-title" closedby="any">
 	<div class="modal-header">
 		<h1 id="profile-title">Mi perfil</h1>
 		<form method="dialog"><button class="modal-close-btn" aria-label="Cerrar">&times;</button></form>

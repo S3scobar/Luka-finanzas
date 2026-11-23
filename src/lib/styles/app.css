@@ -127,8 +127,8 @@ main:focus { outline: none; }
 
 /* -------- Perfil (hoja de vidrio con <dialog>) -------- */
 /* .modal-content fija display en otras hojas: sin esto el diálogo cerrado seguía visible */
-.profile-sheet:not([open]) { display: none !important; }
-.profile-sheet[open] {
+.sheet:not([open]) { display: none !important; }
+.sheet[open] {
   width: min(440px, calc(100% - 2rem));
   max-height: min(88dvh, 760px);
   overflow-y: auto;
@@ -137,7 +137,7 @@ main:focus { outline: none; }
   border-radius: 28px;
   color: var(--text-main);
 }
-.profile-sheet::backdrop {
+.sheet::backdrop {
   background: var(--g-scrim, rgba(15, 23, 42, 0.45));
   -webkit-backdrop-filter: blur(10px) saturate(140%);
   backdrop-filter: blur(10px) saturate(140%);
@@ -145,12 +145,12 @@ main:focus { outline: none; }
   overscroll-behavior: contain;
 }
 @media (max-width: 480px) {
-  .profile-sheet[open] { width: 100%; max-width: none; margin: auto 0 0; border-radius: 28px 28px 0 0; }
+  .sheet[open] { width: 100%; max-width: none; margin: auto 0 0; border-radius: 28px 28px 0 0; }
 }
-.profile-sheet .modal-header { display: flex; align-items: center; justify-content: space-between; }
-.profile-sheet h1 { margin: 0; font-size: 1.25rem; }
-.profile-sheet h2 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--text-main); }
-.profile-sheet .modal-close-btn { min-width: 44px; min-height: 44px; }
+.sheet .modal-header { display: flex; align-items: center; justify-content: space-between; }
+.sheet h1 { margin: 0; font-size: 1.25rem; }
+.sheet h2 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--text-main); }
+.sheet .modal-close-btn { min-width: 44px; min-height: 44px; }
 .profile-id { display: flex; align-items: center; gap: 0.85rem; margin: 1rem 0; }
 .profile-id div { display: grid; min-width: 0; }
 .profile-id small { color: var(--text-muted); overflow-wrap: anywhere; }
@@ -184,3 +184,15 @@ main:focus { outline: none; }
 }
 .profile-danger[open] summary { margin-bottom: 0.5rem; }
 .profile-logout:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* -------- Inicio (Svelte) -------- */
+.dashboard-banners-stack { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+.dashboard-banners-stack .card-statement-banner { margin-bottom: 0; }
+.transactions-list { list-style: none; margin: 0; padding: 0; }
+.btn-toggle-all { margin-top: 0.85rem; font-weight: 700; gap: 0.4rem; }
+.zero-interest-wrap {
+  display: flex; align-items: center; gap: 8px; margin: 6px 0 2px; min-height: 44px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 600;
+}
+.zero-interest-wrap input { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
+.sheet .modal-categories-grid { margin-top: 1rem; }
