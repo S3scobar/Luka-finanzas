@@ -7,6 +7,25 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [3.1.0] - 2026-11-23
+
+### Añadido
+
+- Perfil con el estilo de la moneda base y la opción «Borrar registro» para empezar de cero sin borrar la cuenta.
+- Avisos en la barra del celular.
+- Panel financiero para computador.
+- Análisis con hallazgos automáticos y gráficas útiles.
+- Presupuesto con anillo de progreso y gasto diario sugerido; Suscripciones con orden por fecha de cobro y costo anual.
+
+### Cambiado
+
+- Inicio, Billeteras, Presupuesto, Crédito, Suscripciones, Análisis y Ahorros ahora son componentes Svelte.
+- Pruebas automáticas de análisis, panel y ahorros.
+
+### Corregido
+
+- El perfil seguía visible al cerrarlo.
+
 ## [3.0.0] - 2026-11-23
 
 ### Añadido
@@ -128,6 +147,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[3.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.4.0...v3.0.0
 [2.4.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.2.0...v2.3.0
