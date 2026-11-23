@@ -41,11 +41,11 @@ export const subscriptionService = {
     return data;
   },
 
-  // Pausar o reanudar suscripción
-  async toggleSubscription(id, is_active) {
+  // Editar datos o pausar/reanudar ({ is_active })
+  async updateSubscription(id, fields) {
     const { data, error } = await supabase
       .from("subscriptions")
-      .update({ is_active })
+      .update(fields)
       .eq("id", id)
       .select()
       .single();
