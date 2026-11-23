@@ -7,21 +7,22 @@ on:
 
 jobs:
   checks:
-    name: Sintaxis y pruebas
+    name: Pruebas y build
     runs-on: ubuntu-latest
+    env:
+      # Valores de relleno: el build solo verifica que existan
+      PUBLIC_SUPABASE_URL: https://ejemplo.supabase.co
+      PUBLIC_SUPABASE_ANON_KEY: ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Revisar módulos ES
-        run: |
-          status=0
-          for f in $(git ls-files 'js/*.js' 'js/**/*.js'); do
-            node --input-type=module --check < "$f" || { echo "Error de sintaxis en $f"; status=1; }
-          done
-          exit $status
-      - name: Revisar el service worker
-        run: node --check sw.js
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - name: Pruebas
-        run: node --import ./tests/helpers/register.mjs --test tests/*.test.mjs
+        run: npm test
+      - name: Revisar componentes Svelte
+        run: npm run check
+      - name: Build
+        run: npm run build

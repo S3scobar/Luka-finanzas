@@ -1,11 +1,15 @@
-// Sustituye el import de supabase-js por CDN para poder probar la lógica pura en Node, sin red.
+// Sustituye supabase-js y los módulos virtuales de SvelteKit para probar la lógica pura en Node, sin red.
+const STUBS = {
+  "@supabase/supabase-js": "export const createClient = () => ({});",
+  "$app/env/public": "export const PUBLIC_SUPABASE_URL = ''; export const PUBLIC_SUPABASE_ANON_KEY = '';"
+};
 export async function resolve(specifier, context, next) {
-  if (specifier.startsWith("https://")) return { url: "stub:cdn", shortCircuit: true };
+  if (specifier in STUBS) return { url: `stub:${specifier}`, shortCircuit: true };
   return next(specifier, context);
 }
 export async function load(url, context, next) {
-  if (url === "stub:cdn") {
-    return { format: "module", source: "export const createClient = () => ({});", shortCircuit: true };
+  if (url.startsWith("stub:")) {
+    return { format: "module", source: STUBS[url.slice(5)], shortCircuit: true };
   }
   return next(url, context);
 }

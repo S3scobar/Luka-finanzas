@@ -2,7 +2,7 @@
 // Ejecutar: node --import ./tests/helpers/register.mjs --test tests/
 import test from "node:test";
 import assert from "node:assert/strict";
-import { loanService, isMissingLoansTable } from "../js/services/loanService.js";
+import { loanService, isMissingLoansTable } from "../src/lib/services/loanService.js";
 
 const calc = (loan) => loanService.calculateSummary({ payments: [], ...loan });
 

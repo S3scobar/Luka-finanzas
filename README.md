@@ -1,6 +1,6 @@
 # LUKA
 
-Aplicación web de finanzas personales: registro de gastos e ingresos, cuentas, presupuestos por categoría, tarjetas de crédito, suscripciones y fondos de ahorro. Es un sitio estático (HTML, CSS y JavaScript con módulos ES) que usa Supabase para la base de datos y la autenticación, se despliega en Vercel y se puede instalar como app (PWA).
+Aplicación web de finanzas personales: registro de gastos e ingresos, cuentas, presupuestos por categoría, tarjetas de crédito, suscripciones y fondos de ahorro. Está hecha con SvelteKit, se prerenderiza como sitio estático, usa Supabase para la base de datos y la autenticación, se despliega en Vercel y se puede instalar como app (PWA).
 
 ---
 
@@ -24,7 +24,7 @@ Modo claro y oscuro, con datos de demostración.
 ## Qué demuestra este proyecto
 
 * **Datos y seguridad:** aislamiento por usuario con RLS en PostgreSQL, funciones RPC atómicas para saldos, un trigger que impide tocar billeteras ajenas y permisos de funciones revisados con los avisos de seguridad de Supabase.
-* **Sin dependencias de build:** ES Modules nativos, sin framework ni bundler, organizado en servicios, componentes y vistas.
+* **SvelteKit prerenderizado:** cada pestaña es una ruta real (enlace directo y botón Atrás), cada vista se carga bajo demanda y todo sale como HTML estático en la CDN de Vercel, sin servidor.
 * **Experiencia móvil:** PWA instalable, navegación por gestos, esqueletos de carga, tema claro/oscuro animado y desbloqueo con Face ID o huella (WebAuthn).
 * **Pruebas de la lógica financiera:** el cálculo de cuotas, saldos y fechas de préstamos tiene pruebas automáticas que corren en cada PR.
 * **Rendimiento medido:** el cambio de tema y el desplazamiento se midieron con la CPU limitada 6× y se ajustaron hasta mantener unos 50 a 60 fps.
@@ -42,11 +42,12 @@ Modo claro y oscuro, con datos de demostración.
 
 ## 2. Decisiones de diseño
 
-* **Sin framework ni bundler:** ES Modules nativos y dos dependencias por CDN (Font Awesome y `supabase-js`).
+* **SvelteKit con migración gradual:** el marco (cabecera, navegación, pie, páginas legales) y el Conversor ya son componentes Svelte; las demás vistas conservan su render original y se montan con `LegacyView.svelte` hasta pasarlas una a una.
+* **Sin código de terceros en tiempo de ejecución:** `supabase-js` y los iconos se instalan con npm y se empaquetan; no se carga nada desde CDNs.
 * **Aislamiento entre usuarios con RLS:** cada fila tiene `user_id` y las políticas limitan el acceso a `auth.uid() = user_id` (ver `supabase/schema.sql`).
 * **Saldos coherentes:** el trigger `tr_transaction_balance` ajusta el saldo de la billetera al crear o borrar una transacción, por lo que el código no lo toca a mano en esos casos. Para el cupo de las tarjetas y las transferencias, `walletService.adjustBalance()` usa funciones RPC atómicas (`supabase/schema.sql`); si no están desplegadas, lee y escribe.
 * **Móvil primero:** pestañas deslizables, montos con separador de miles (`es-CO`) y tutorial en el primer ingreso.
-* **Tema claro y oscuro:** los colores salen de variables CSS en `css/main.css`; el tema oscuro solo las redefine.
+* **Tema claro y oscuro:** los colores salen de variables CSS en `src/lib/styles/main.css`; el tema oscuro solo las redefine.
 
 ---
 
@@ -113,12 +114,12 @@ La pestaña **Crédito** tiene dos secciones, porque funcionan distinto.
 * Límites: presupuestos y análisis aún suman los montos sin convertir, y solo se transfiere entre cuentas de la misma moneda.
 
 ### 3.9. Tutorial interactivo
-* Pantalla de apertura animada (logo, "LUKA" y lema) una vez por sesión; un toque la salta y se omite con "reducir movimiento" (`css/splash.css`, `js/components/splash.js`).
+* Pantalla de apertura animada (logo, "LUKA" y lema) una vez por sesión; un toque la salta y se omite con "reducir movimiento" (`src/lib/styles/splash.css`, `src/lib/ui/Splash.svelte`).
 * Guía paso a paso por cada pestaña (Inicio, Billeteras, Presupuesto, Crédito, Suscripciones, Ahorros y Análisis), disponible desde un botón flotante.
 
 ### 3.10. Acceso y bloqueo con Face ID
 * Ingreso con celular, correo o Google, con un deslizador «desliza para ingresar».
-* **Face ID / huella (opcional):** tras iniciar sesión se ofrece activar el desbloqueo biométrico (WebAuthn con autenticador de la plataforma, `js/services/biometricService.js`). Con él activo, la app pide la verificación al abrirse y al volver tras más de un minuto en segundo plano. Es un candado local sobre la sesión ya guardada: no inicia sesión por sí solo ni guarda datos biométricos. Cerrar sesión lo desactiva.
+* **Face ID / huella (opcional):** tras iniciar sesión se ofrece activar el desbloqueo biométrico (WebAuthn con autenticador de la plataforma, `src/lib/services/biometricService.js`). Con él activo, la app pide la verificación al abrirse y al volver tras más de un minuto en segundo plano. Es un candado local sobre la sesión ya guardada: no inicia sesión por sí solo ni guarda datos biométricos. Cerrar sesión lo desactiva.
 * Cada celular puede vincularse a un máximo de 2 cuentas.
 
 ### 3.10. Modo oscuro y estilo visual
@@ -128,17 +129,17 @@ La pestaña **Crédito** tiene dos secciones, porque funcionan distinto.
 * Si el usuario nunca eligió manualmente, la app sigue los cambios del sistema en tiempo real.
 * Actualiza el `theme-color` del navegador móvil y usa `color-scheme` para que los controles nativos (fechas, selects, scrollbars) también se vean oscuros.
 * El cambio de tema se anima desde el botón (View Transitions API, con respaldo por fundido).
-* Estilo «liquid glass» (`css/glass.css`, `css/liquid.css`): superficies translúcidas con desenfoque y borde de luz, y esqueletos de carga al cambiar de pestaña. Respeta `prefers-reduced-motion` y `prefers-reduced-transparency`.
+* Estilo «liquid glass» (`src/lib/styles/glass.css`, `src/lib/styles/liquid.css`): superficies translúcidas con desenfoque y borde de luz, y esqueletos de carga al cambiar de pestaña. Respeta `prefers-reduced-motion` y `prefers-reduced-transparency`.
 
 ---
 
 ## 4. Arquitectura de Software y Stack Tecnológico
 
 ### Capa Cliente
-* **Lenguajes:** HTML5, CSS3 con variables y diseño responsivo, JavaScript vanilla (ES2020+).
-* **Modularización:** servicios de datos (`js/services`), componentes reutilizables (`js/components`) y vistas (`js/views`), todo cargado con ES Modules nativos.
-* **Dependencias por CDN:** Font Awesome 6 (iconos) y `@supabase/supabase-js` v2 (vía jsDelivr).
-* **Navegación:** SPA de una sola página; `index.html` alterna entre vistas según la pestaña activa.
+* **Framework:** SvelteKit 3 (Svelte 5 con runas) sobre Vite 8, en JavaScript.
+* **Rutas:** `/`, `/billeteras`, `/presupuesto`, `/credito`, `/suscripciones`, `/ahorros`, `/analisis`, `/conversor`, `/privacidad` y `/terminos`. Todas se prerenderizan.
+* **Organización:** servicios de datos (`src/lib/services`), componentes heredados (`src/lib/components`), vistas heredadas (`src/lib/views`), componentes Svelte (`src/lib/ui`) y controlador de sesión (`src/lib/appController.js`).
+* **Dependencias:** `@supabase/supabase-js`, Phosphor Icons y Font Awesome 6, todas desde npm.
 
 ### Capa de Datos (Backend as a Service)
 * **Plataforma:** Supabase.
@@ -146,8 +147,8 @@ La pestaña **Crédito** tiene dos secciones, porque funcionan distinto.
 * **Autenticación:** Supabase Auth con JWT: correo y contraseña, celular (correo interno `@phone.luka.app`) y Google.
 
 ### Infraestructura
-* **Despliegue:** Vercel (sitio estático con `cleanUrls` y reescritura de todas las rutas a `index.html`).
-* **PWA:** `manifest.webmanifest` y `sw.js` (red primero para HTML, JS y CSS; caché con revalidación para iconos).
+* **Despliegue:** Vercel con `@sveltejs/adapter-vercel`; cabeceras de seguridad en `vercel.json`.
+* **PWA:** `static/manifest.webmanifest` y `src/service-worker.js` (archivos con hash en caché permanente; páginas con red primero y copia sin conexión; Supabase nunca pasa por caché).
 * **Control de versiones:** Git / GitHub.
 
 ---
@@ -155,68 +156,33 @@ La pestaña **Crédito** tiene dos secciones, porque funcionan distinto.
 ## 5. Estructura del Directorio
 
 ```text
-├── index.html                      # Estructura HTML, script anti-parpadeo del tema y carga de js/main.js
-├── vercel.json                     # cleanUrls + reescritura de rutas para SPA
-├── favicon.svg                     # Icono de la app
-├── .gitignore
-├── README.md
-├── tests/                          # Pruebas de la lógica de préstamos (node:test)
-├── .github/workflows/ci.yml        # Sintaxis de los módulos y pruebas
-├── manifest.webmanifest            # PWA: nombre, iconos y colores
-├── sw.js                           # Service worker
-├── supabase/
-│   ├── schema.sql                  # Esquema completo: tablas, índices, RLS, funciones y triggers
-│   └── migrations/                 # Cambios aplicados sobre el esquema, con fecha
-├── css/
-│   ├── main.css                    # Tokens de diseño (tema claro y oscuro), reset y tipografía
-│   ├── components.css              # Botones, tarjetas, modales y formularios
-│   ├── views.css                   # Estilos específicos de cada vista
-│   ├── glass.css                   # Barra, píldora de navegación, transiciones y deslizador
-│   ├── splash.css                  # Pantalla de apertura
-│   └── liquid.css                  # Capa «liquid glass», esqueletos, Face ID y pantalla de acceso
-└── js/
-    ├── main.js                     # Punto de entrada: sesión, navegación entre vistas y tema
-    ├── config.js                   # URL y clave pública (anon) de Supabase
-    ├── supabaseClient.js           # Cliente Supabase, requireUserId() e isMissingRpc()
-    ├── themeManager.js             # Tema claro/oscuro: preferencia, persistencia y botón
-    ├── utils.js                    # escapeHtml(), resolveContainer() y notifyError()
-    ├── currencyFormatter.js        # Entrada de moneda con separador de miles (es-CO)
-    ├── icons.js                    # Iconos disponibles para categorías, billeteras y ahorros, y su selector
-    ├── colorSwatches.js            # Colores rápidos para categorías y billeteras
-    ├── services/
-    │   ├── authService.js          # Registro, login (correo, celular, Google), logout y sesión
-    │   ├── biometricService.js     # Face ID / huella con WebAuthn
-    │   ├── walletService.js        # Billeteras, ajustes de saldo y transferencias
-    │   ├── categoryService.js      # Categorías y favoritas
-    │   ├── transactionService.js   # Transacciones (consulta mensual/anual, alta y baja)
-    │   ├── budgetService.js        # Presupuestos por categoría y su avance
-    │   ├── creditCardService.js    # Tarjetas, compras, avances, pagos y extracto
-    │   ├── loanService.js          # Préstamos, pagos y cálculo de cuotas/saldo
-    │   ├── subscriptionService.js  # Pagos fijos recurrentes
-    │   └── goalService.js          # Fondos de ahorro, aportes, retiros y rendimientos
-    ├── components/
-    │   ├── quickExpenseBar.js      # Barra de registro rápido
-    │   ├── modalCategoryPicker.js  # Selector modal de categorías
-    │   ├── tutorialTour.js         # Tutorial interactivo
-    │   ├── slideToSubmit.js        # Deslizador de ingreso
-    │   ├── swipeNav.js             # Cambio de pestaña deslizando
-    │   ├── liquidNav.js            # Píldora animada de la barra
-    │   ├── glassLight.js           # Brillo que sigue al puntero
-    │   ├── biometricLock.js        # Pantalla de bloqueo y oferta de Face ID
-    │   ├── skeleton.js             # Esqueleto de carga
-    │   ├── splash.js               # Pantalla de apertura
-    │   └── installPrompt.js        # Botón de instalación (PWA)
-    └── views/
-        ├── authView.js             # Login y registro
-        ├── dashboardView.js        # Inicio: métricas, registro rápido e historial
-        ├── walletsView.js          # Cuentas, transferencias y categorías
-        ├── budgetsView.js          # Presupuestos
-        ├── creditView.js           # Pestaña Crédito: selector Tarjetas / Préstamos
-        ├── creditCardsView.js      # Tarjetas de crédito
-        ├── loansView.js            # Préstamos
-        ├── subscriptionsView.js    # Suscripciones
-        ├── savingsView.js          # Ahorros
-        └── analyticsView.js        # Análisis mensual y anual
+├── vite.config.js                  # SvelteKit, adaptador de Vercel y política de seguridad de contenido (CSP)
+├── vercel.json                     # Cabeceras de seguridad (HSTS, frame-ancestors, Permissions-Policy…)
+├── .env.example                    # Variables públicas de Supabase
+├── supabase/                       # schema.sql y migraciones
+├── tests/                          # Pruebas de préstamos y monedas (node:test)
+├── static/                         # favicon, iconos, manifest y boot.js (tema antes de pintar)
+└── src/
+    ├── app.html                    # Plantilla HTML
+    ├── env.js                      # Declaración y validación de variables de entorno
+    ├── service-worker.js           # Caché offline de la PWA
+    ├── routes/
+    │   ├── +layout.svelte          # Cabecera, navegación, pie con enlaces legales
+    │   ├── (app)/                  # Pestañas de la app (con sesión)
+    │   │   ├── +layout.svelte      # Login / vincular celular / app, y dirección de la transición
+    │   │   └── conversor/          # Primera vista nativa en Svelte
+    │   ├── privacidad/             # Política de privacidad
+    │   └── terminos/               # Términos, licencia y copyright
+    └── lib/
+        ├── appController.js        # Sesión, Face ID, notificaciones, tutorial y gestos (antes main.js)
+        ├── session.svelte.js       # Estado compartido de la sesión
+        ├── tabs.js · views.js      # Pestañas y carga diferida de vistas
+        ├── legal.js                # Autor, contacto y fecha de los textos legales
+        ├── ui/                     # Componentes Svelte (LegacyView, Tab, Splash, Footer, LegalPage)
+        ├── styles/                 # CSS liquid glass (main, components, views, glass, splash, liquid, app)
+        ├── services/               # Acceso a Supabase y lógica financiera
+        ├── components/             # Componentes heredados (barra rápida, tutorial, Face ID…)
+        └── views/                  # Vistas heredadas, pendientes de migrar a Svelte
 ```
 
 > **Nota:** los nombres de archivo distinguen mayúsculas y minúsculas en Linux/Vercel. Todos los módulos usan `camelCase` y los imports deben coincidir exactamente.
@@ -249,37 +215,32 @@ Todas las tablas tienen RLS activado, con una política que limita cada fila a s
 
 ## 7. Instalación y Ejecución Local
 
-No requiere compilación ni `npm install`: es un sitio estático.
+Requiere Node 22.17 o superior.
 
-1. Clona el repositorio:
+1. Clona el repositorio e instala dependencias:
    ```bash
    git clone https://github.com/S3scobar/LUKA.git
    cd LUKA
+   npm install
    ```
-2. Crea tu propio proyecto en [Supabase](https://supabase.com), ejecuta `supabase/schema.sql` en el SQL Editor (crea tablas, RLS, índices y funciones).
-3. Edita `js/config.js` con la URL y la **anon key** de tu proyecto (nunca uses la `service_role` key en el cliente).
-4. Sirve la carpeta con cualquier servidor estático (los ES Modules no funcionan abriendo el archivo directamente):
-   ```bash
-   npx serve .
-   # o
-   python3 -m http.server 8000
-   ```
-5. Abre `http://localhost:3000` (o `:8000`) y crea una cuenta.
+2. Crea tu propio proyecto en [Supabase](https://supabase.com) y ejecuta `supabase/schema.sql` en el SQL Editor.
+3. Copia `.env.example` a `.env` y pon la URL y la **anon key** de tu proyecto (nunca la `service_role`).
+4. `npm run dev` y abre `http://localhost:5173`.
 
 ### Despliegue en Vercel
-Importa el repositorio en Vercel como proyecto estático, sin comando de build. El archivo `vercel.json` ya incluye la configuración necesaria.
+Vercel detecta SvelteKit solo. En **Settings → Environment Variables** define `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY`: si faltan, el build falla a propósito. En Supabase, agrega la URL de Vercel a **Authentication → URL Configuration** para el inicio con Google.
 
 ---
 
 ### Pruebas
 
-La lógica de préstamos (cuota con sistema francés, saldo, progreso y próxima fecha) se prueba con el ejecutor de pruebas de Node, sin dependencias (Node 20 o superior):
-
 ```bash
-node --import ./tests/helpers/register.mjs --test tests/*.test.mjs
+npm test        # lógica de préstamos y monedas (node:test, sin red)
+npm run check   # componentes Svelte
+npm run build   # build completo con prerenderizado
 ```
 
-El archivo `tests/helpers/` sustituye la importación de `supabase-js` por CDN para poder cargar los servicios sin red. En cada push y PR, GitHub Actions comprueba además la sintaxis de todos los módulos.
+`tests/helpers/` sustituye `supabase-js` y las variables de entorno para cargar los servicios sin red. GitHub Actions corre las tres cosas en cada push y PR.
 
 ## 8. Varios usuarios a la vez
 
@@ -292,7 +253,9 @@ El archivo `tests/helpers/` sustituye la importación de `supabase-js` por CDN p
 
 ## 9. Seguridad y limitaciones
 
-* **Clave pública:** la `anon key` de `config.js` es pública por diseño; la protección depende de las políticas RLS.
+* **Clave pública:** la `anon key` es pública por diseño (va en el bundle); la protección depende de las políticas RLS. Ya no está en el repositorio: se configura como variable de entorno.
+* **Cabeceras y CSP:** `script-src 'self'` con hashes (sin scripts en línea ni CDNs), `connect-src` limitado a Supabase y a la API de tasas, `frame-ancestors 'none'`, HSTS y `Permissions-Policy`. `style-src` aún permite `'unsafe-inline'` porque las vistas heredadas usan atributos `style`; Trusted Types queda para cuando esas vistas dejen de usar `innerHTML`.
+* **Textos legales:** `/privacidad` (Ley 1581 de 2012) y `/terminos` (licencia MIT, copyright y marca), enlazados desde el pie de página.
 * **Fondos de ahorro:** aportes y retiros siguen leyendo y escribiendo `saving_goals.current_amount` en pasos separados; falta una función RPC como la de las billeteras.
 * **Compras con tarjeta:** registrar una compra implica varias llamadas (compra, cupo, transacción). Si una falla a mitad, los datos pueden quedar a medias. Lo ideal es una función SQL que haga todo en una transacción.
 * **Pagos de tarjeta y avances anteriores:** hasta esta versión `payCard()` y el avance de `addPurchase()` ajustaban el saldo a mano y además el trigger lo ajustaba al registrar la transacción, así que el movimiento se contaba dos veces. Ya no ocurre, pero los saldos de pagos y avances hechos antes pueden estar desviados: corrígelos con el lápiz de editar en Billeteras.
