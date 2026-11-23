@@ -7,6 +7,7 @@
 	import { resolveIconClass } from '#lib/icons.js';
 	import { formatShortDate, notifyError } from '#lib/utils.js';
 	import { skeletonHtml } from '#lib/components/skeleton.js';
+	import { parseCurrencyInput, formatMoneyInput } from '#lib/currencyFormatter.js';
 	import Sheet from '#lib/ui/Sheet.svelte';
 	import PeriodNav from '#lib/ui/PeriodNav.svelte';
 
@@ -48,8 +49,6 @@
 		const daysLeft = new Date(year, month, 0).getDate() - now.getDate() + 1;
 		return { days: daysLeft, amount: d.totalRemaining / daysLeft };
 	});
-	const money = (v) => Number(String(v).replace(/\D/g, '')) || 0;
-	const fmt = (e) => (e.currentTarget.value = money(e.currentTarget.value).toLocaleString('es-CO'));
 
 	// ---------- Hojas ----------
 	let newSheet, detailSheet;
@@ -72,7 +71,7 @@
 
 	async function save(e, sheet) {
 		e.preventDefault();
-		const monthly_limit = money(form.limitText);
+		const monthly_limit = parseCurrencyInput(form.limitText);
 		if (monthly_limit <= 0) return (formError = 'Ingresa un límite mayor a 0.');
 		busy = true;
 		try {
@@ -197,7 +196,7 @@
 		</div>
 		<div class="form-group">
 			<label for="bg-limit">Límite mensual</label>
-			<input id="bg-limit" bind:value={form.limitText} oninput={fmt} inputmode="numeric" placeholder="Ej. 500.000" autocomplete="off" required aria-describedby="bg-help" />
+			<input id="bg-limit" bind:value={form.limitText} oninput={formatMoneyInput} inputmode="numeric" placeholder="Ej. 500.000" autocomplete="off" required aria-describedby="bg-help" />
 			<small id="bg-help" class="profile-help">Lo máximo que planeas gastar en esta categoría cada mes.</small>
 		</div>
 		{#if formError}<div class="alert-error" role="alert">{formError}</div>{/if}
@@ -239,7 +238,7 @@
 		<form class="budget-detail-edit" onsubmit={(e) => save(e, detailSheet)}>
 			<div class="form-group">
 				<label for="bg-edit">Límite mensual</label>
-				<input id="bg-edit" bind:value={form.limitText} oninput={fmt} inputmode="numeric" autocomplete="off" required />
+				<input id="bg-edit" bind:value={form.limitText} oninput={formatMoneyInput} inputmode="numeric" autocomplete="off" required />
 			</div>
 			{#if formError}<div class="alert-error" role="alert">{formError}</div>{/if}
 			<div class="budget-detail-actions">
