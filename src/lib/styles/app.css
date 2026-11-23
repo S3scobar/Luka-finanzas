@@ -213,3 +213,72 @@ button.fav-badge:active { transform: scale(0.88); }
 .category-manage-card.is-selected .fav-badge { background-color: var(--warning); color: #fff; }
 .sheet-submit { margin-top: 1.25rem; min-height: 48px; }
 .sheet .cat-preview { margin-top: 1rem; }
+
+/* -------- Presupuesto (Svelte) -------- */
+.period-current-label { text-align: center; display: grid; justify-items: center; gap: 0.1rem; }
+.period-current-label h2 { margin: 0; font-size: 1.15rem; color: var(--text-main); }
+.period-current-label small { color: var(--text-muted); font-size: 0.75rem; }
+.period-today {
+  border: 0; background: none; padding: 0.2rem 0.6rem; min-height: 32px;
+  font: inherit; font-size: 0.78rem; font-weight: 700; color: var(--primary); cursor: pointer;
+}
+.nav-arrow-btn { width: 44px; height: 44px; }
+.budgets-module { transition: opacity 0.2s ease; }
+.budgets-module.is-loading .budget-hero-card, .budgets-module.is-loading .section-card { opacity: 0.55; }
+
+/* Anillo de progreso del mes */
+.budget-hero-ring { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1.25rem; }
+.budget-hero-ring .ring { width: 116px; height: 116px; rotate: -90deg; overflow: visible; }
+.ring-track { fill: none; stroke: var(--border); stroke-width: 9; }
+.ring-fill {
+  fill: none; stroke: var(--primary); stroke-width: 9; stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s var(--g-spring, cubic-bezier(0.34, 1.3, 0.5, 1)), stroke 0.3s ease;
+  filter: drop-shadow(0 2px 6px rgb(15 23 42 / 0.18));
+}
+.is-warn .ring-fill { stroke: var(--warning); }
+.is-danger .ring-fill { stroke: var(--danger); }
+.ring text { rotate: 90deg; transform-origin: 50px 50px; text-anchor: middle; dominant-baseline: middle; fill: var(--text-main); }
+.ring-pct { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+.ring-label { font-size: 9px; font-weight: 600; fill: var(--text-muted) !important; text-transform: uppercase; letter-spacing: 1px; }
+.hero-figures { display: grid; gap: 0.45rem; justify-items: start; min-width: 0; }
+.hero-figures .budget-hero-amount-row { margin: 0; flex-wrap: wrap; }
+.hero-figures .budget-hero-spent { font-size: clamp(1.35rem, 6vw, 1.85rem); }
+.hero-perday { font-size: 0.8rem; color: var(--text-muted); }
+@media (max-width: 360px) { .budget-hero-ring { grid-template-columns: 1fr; justify-items: center; } }
+
+/* Tarjetas: ahora son botones (teclado y lector de pantalla) */
+.budgets-list-grid { list-style: none; padding: 0; }
+button.budget-card { width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.budget-card.is-warn .budget-progress-fill { background-color: var(--warning); }
+.budget-card.is-danger .budget-progress-fill { background-color: var(--danger); }
+.budget-card.is-danger { border-color: color-mix(in srgb, var(--danger) 35%, transparent); }
+
+/* Detalle */
+.budget-detail-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center;
+  margin: 1rem 0; padding: 0.9rem; border-radius: 18px;
+  background: var(--liquid-bg); border: 1px solid var(--liquid-border); box-shadow: var(--liquid-shine);
+}
+.budget-detail-stats span { display: block; font-size: 0.72rem; color: var(--text-muted); }
+.budget-detail-stats strong { font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.budget-detail-title { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.95rem; margin: 0 0 0.6rem; }
+.budget-detail-title small { color: var(--text-muted); font-weight: 600; }
+.budget-detail-list { max-height: 260px; overflow-y: auto; overscroll-behavior: contain; }
+.budget-detail-edit { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.budget-detail-actions { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; }
+.budget-detail-actions .btn { min-height: 48px; }
+
+@media (prefers-reduced-motion: reduce) { .ring-fill, .budgets-module { transition: none; } }
+.budget-hero-badge { white-space: nowrap; }
+button.budget-card .budget-card-header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+button.budget-card .budget-cat-info { min-width: 0; }
+button.budget-card .budget-meta { min-width: 0; }
+.budget-pct {
+  flex: none; padding: 0.3rem 0.65rem; border-radius: 999px;
+  font-size: 0.85rem; font-weight: 800; font-variant-numeric: tabular-nums;
+  color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+.budget-pct.is-warn { color: var(--warning-text); background: color-mix(in srgb, var(--warning) 16%, transparent); }
+.budget-pct.is-danger { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.budget-numbers-row { margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.budget-numbers-row strong { color: var(--text-main); }
