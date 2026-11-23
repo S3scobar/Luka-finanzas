@@ -7,7 +7,7 @@
 // 4. Recordatorio diario opcional: "¿Registraste tus gastos de hoy?"
 //
 // Entrega:
-// - Notificaciones In-App (Campana con badge y Centro de Notificaciones desplegable + banner contextual).
+// - Banner en Inicio.
 // - Notificaciones Web Push (Navegador) con permiso explícito no invasivo.
 
 import { subscriptionService } from "./subscriptionService.js";
@@ -15,8 +15,10 @@ import { creditCardService } from "./creditCardService.js";
 import { loanService } from "./loanService.js";
 import { budgetService } from "./budgetService.js";
 import { transactionService } from "./transactionService.js";
+import { pathOf } from "../tabs.js";
 
 const STORAGE_KEY_SETTINGS = "luka_notification_settings";
+const STORAGE_KEY_SENT = "luka_sent_notifications";
 const STORAGE_KEY_DISMISSED = "luka_dismissed_notifications";
 
 export const notificationService = {
@@ -304,7 +306,24 @@ export const notificationService = {
     return notifications;
   },
 
-  // Disparar notificación push del navegador (si está permitido)
+  // Envía a la barra de notificaciones del sistema cada aviso nuevo, una sola vez por día
+  async notifySystem(list) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    const today = new Date().toISOString().slice(0, 10);
+    let sent;
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_SENT));
+      sent = new Set(saved?.date === today ? saved.keys : []);
+    } catch { sent = new Set(); }
+    for (const n of list) {
+      if (sent.has(n.id)) continue;
+      sent.add(n.id);
+      await this.triggerWebNotification(n);
+    }
+    try { localStorage.setItem(STORAGE_KEY_SENT, JSON.stringify({ date: today, keys: [...sent] })); } catch {}
+  },
+
+  // Disparar notificación del sistema (si está permitido)
   async triggerWebNotification(n) {
     if (!("Notification" in window)) return;
     if (Notification.permission !== "granted") return;
@@ -315,9 +334,8 @@ export const notificationService = {
         reg.showNotification(n.title, {
           body: n.message,
           icon: "/icon-192.png",
-          badge: "/favicon.svg",
           tag: n.id,
-          data: { actionTab: n.actionTab }
+          data: { url: pathOf(n.actionTab) || "/" }
         });
       } else {
         new Notification(n.title, {

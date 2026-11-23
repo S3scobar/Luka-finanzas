@@ -51,3 +51,15 @@ self.addEventListener('fetch', (event) => {
 			})
 	);
 });
+
+// Tocar una notificación abre LUKA (o la trae al frente) en la pestaña del aviso
+self.addEventListener('notificationclick', (event) => {
+	event.notification.close();
+	const url = new URL(event.notification.data?.url || '/', self.location.origin).href;
+	event.waitUntil(
+		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+			const win = wins.find((w) => new URL(w.url).origin === self.location.origin);
+			return win ? win.focus().then((w) => w.navigate(url)) : self.clients.openWindow(url);
+		})
+	);
+});
