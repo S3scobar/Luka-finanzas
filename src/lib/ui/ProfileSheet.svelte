@@ -14,7 +14,7 @@
 	let user = $state(null);
 	let phone = $state('');
 	let name = $state('');
-	let msg = $state({ name: '', phone: '', pass: '' });
+	let msg = $state({ name: '', phone: '', pass: '', reset: '' });
 	let busy = $state('');
 	let bioOn = $state(false);
 	let bioSupported = $state(false);
@@ -28,7 +28,8 @@
 
 	export async function open() {
 		dialog.showModal();
-		msg = { name: '', phone: '', pass: '' };
+		msg = { name: '', phone: '', pass: '', reset: '' };
+		resetText = '';
 		const { data } = await supabase.auth.getUser();
 		user = data.user;
 		name = user?.user_metadata?.full_name || session.name || '';
@@ -102,6 +103,18 @@
 			} catch {}
 		}
 	}
+
+	// Borrar registro: exige escribir BORRAR, porque no se puede deshacer
+	let resetText = $state('');
+	const resetData = (e) =>
+		run('reset', 'reset', async () => {
+			e.preventDefault();
+			if (resetText.trim().toUpperCase() !== 'BORRAR') throw new Error('Escribe BORRAR para confirmar.');
+			await authService.resetMyData();
+			try { ['luka_sent_notifications', 'luka_dismissed_notifications'].forEach((k) => localStorage.removeItem(k)); } catch {}
+			location.assign('/'); // recarga limpia: ninguna pantalla conserva datos borrados
+			return 'Registro borrado.';
+		});
 
 	async function enableNotif() {
 		await notificationService.requestPushPermission();
@@ -192,6 +205,25 @@
 			{/if}
 		</div>
 	</div>
+
+	<details class="profile-block profile-danger">
+		<summary><i class="ph-bold ph-eraser" aria-hidden="true"></i> Borrar registro y empezar de cero</summary>
+		<form onsubmit={resetData}>
+			<p class="profile-help">
+				Se borran tus billeteras, movimientos, categorías, presupuestos, tarjetas, préstamos, suscripciones y ahorros.
+				Tu cuenta, nombre, celular y contraseña se mantienen, y quedas con la billetera y las categorías iniciales.
+				<strong>No se puede deshacer.</strong>
+			</p>
+			<div class="form-group">
+				<label for="pf-reset">Escribe BORRAR para confirmar</label>
+				<input id="pf-reset" bind:value={resetText} autocomplete="off" autocapitalize="characters" spellcheck="false" />
+			</div>
+			<button class="btn btn-block profile-logout" disabled={busy === 'reset' || resetText.trim().toUpperCase() !== 'BORRAR'}>
+				{busy === 'reset' ? 'Borrando…' : 'Borrar todo mi registro'}
+			</button>
+			<p class="profile-msg" aria-live="polite">{msg.reset}</p>
+		</form>
+	</details>
 
 	<button class="btn btn-block profile-logout" onclick={() => { dialog.close(); onlogout(); }}>
 		<i class="ph-bold ph-sign-out" aria-hidden="true"></i> Cerrar sesión

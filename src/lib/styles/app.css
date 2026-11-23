@@ -178,3 +178,9 @@ main:focus { outline: none; }
   border: 1px solid color-mix(in srgb, var(--danger, #dc2626) 30%, transparent);
   border-radius: 999px;
 }
+.profile-danger summary {
+  display: flex; align-items: center; gap: 0.5rem; min-height: 44px;
+  cursor: pointer; font-weight: 650; color: var(--danger);
+}
+.profile-danger[open] summary { margin-bottom: 0.5rem; }
+.profile-logout:disabled { opacity: 0.5; cursor: not-allowed; }

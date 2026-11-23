@@ -1,5 +1,5 @@
 // js/services/authService.js
-import { supabase } from "../supabaseClient.js";
+import { supabase, isMissingRpc } from "../supabaseClient.js";
 
 // Limpia y normaliza el número a solo dígitos (elimina prefijo +57 si viene con él)
 function sanitizePhone(raw) {
@@ -154,6 +154,13 @@ export const authService = {
       throw new Error(data.error || "No se pudo vincular el celular.");
     }
     return data;
+  },
+
+  // Borrar registro: elimina todos los datos financieros y deja la cuenta como nueva (una sola transacción en la base)
+  async resetMyData() {
+    const { error } = await supabase.rpc("reset_my_data");
+    if (isMissingRpc(error)) throw new Error("Falta activar esta función en la base de datos (supabase/migrations/20261123_reset_my_data.sql).");
+    if (error) throw error;
   },
 
   // Registra actividad del usuario para mantener la cuenta viva (evita purga por inactividad de 2 meses)
