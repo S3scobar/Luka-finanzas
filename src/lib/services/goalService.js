@@ -246,6 +246,29 @@ export const goalService = {
     return updatedGoal;
   },
 
+  // Edita nombre, meta, fecha, icono o tasa (el saldo solo cambia con aportes y retiros)
+  async updateGoal(id, { title, target_amount, target_date = null, icon, yield_rate = 0 }) {
+    const { error } = await supabase
+      .from("saving_goals")
+      .update({ title: title.trim(), target_amount: parseFloat(target_amount), target_date: target_date || null, icon, yield_rate: parseFloat(yield_rate) || 0 })
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  // Fechas de los aportes de los últimos 24 meses (para la racha); solo trae la columna de fecha
+  async getContributionDates() {
+    const since = new Date();
+    since.setMonth(since.getMonth() - 24, 1);
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("transaction_date")
+      .eq("type", "expense")
+      .ilike("title", "Ahorro%")
+      .gte("transaction_date", since.toLocaleDateString("en-CA"));
+    if (error) throw error;
+    return (data || []).map((t) => t.transaction_date);
+  },
+
   // Elimina el fondo (no devuelve el dinero a ninguna billetera)
   async deleteGoal(id) {
     const { error } = await supabase
