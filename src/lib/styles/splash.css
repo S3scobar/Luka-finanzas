@@ -109,7 +109,7 @@
   display: flex;
   margin-top: 6px;
   font-size: clamp(3.4rem, 17vw, 5rem);
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.035em;
 }
