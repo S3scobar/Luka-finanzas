@@ -2,7 +2,7 @@
 // Gestiona el tema claro/oscuro: preferencia guardada > preferencia del sistema.
 
 const STORAGE_KEY = "luka_theme";
-const THEME_COLORS = { light: "#F8FAFC", dark: "#0B1220" };
+const THEME_COLORS = { light: "#EEF2F6", dark: "#0B1220" };
 
 function readStoredTheme() {
   try {
@@ -32,8 +32,8 @@ let toggleButton = null;
 function paint(theme) {
   document.documentElement.setAttribute("data-theme", theme);
 
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", THEME_COLORS[theme]);
+  // Las dos metas (claro/oscuro del sistema) toman el tema elegido: la elección manual manda
+  document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", THEME_COLORS[theme]));
 
   if (toggleButton) {
     const isDark = theme === "dark";
