@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { convert, formatMoney, isSupported } from "../js/services/currencyService.js";
+import { convert, formatMoney, isSupported } from "../src/lib/services/currencyService.js";
 
 const rates = { USD: 1, COP: 4000, EUR: 0.8 };
 
