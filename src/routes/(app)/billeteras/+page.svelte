@@ -9,6 +9,7 @@
 	import { CATEGORY_ICON_GROUPS, WALLET_ICONS, resolveIconClass } from '#lib/icons.js';
 	import { notifyError } from '#lib/utils.js';
 	import { skeletonHtml } from '#lib/components/skeleton.js';
+	import { parseCurrencyInput, formatMoneyInput } from '#lib/currencyFormatter.js';
 	import Sheet from '#lib/ui/Sheet.svelte';
 	import IconPicker from '#lib/ui/IconPicker.svelte';
 	import ColorPicker from '#lib/ui/ColorPicker.svelte';
@@ -50,8 +51,6 @@
 		d ? d.categories.filter((c) => c.type === tab).sort((a, b) => (favIds.indexOf(a.id) + 1 || 99) - (favIds.indexOf(b.id) + 1 || 99)) : []
 	);
 	const countOf = (type) => d.categories.filter((c) => c.type === type).length;
-	const money = (v) => Number(String(v).replace(/\D/g, '')) || 0;
-	const fmt = (e) => (e.currentTarget.value = money(e.currentTarget.value).toLocaleString('es-CO'));
 
 	// ---------- Favoritas: se guardan al tocar (antes había que acordarse de "Guardar") ----------
 	let favQueue = Promise.resolve();
@@ -118,7 +117,7 @@
 	const saveWallet = (e) =>
 		submit(e, walletSheet, () => {
 			const { id, name, color, icon, currency } = wForm;
-			const data = { name: name.trim(), balance: money(wForm.balanceText), color, icon };
+			const data = { name: name.trim(), balance: parseCurrencyInput(wForm.balanceText), color, icon };
 			return id ? walletService.updateWallet(id, data) : walletService.createWallet({ ...data, currency });
 		});
 	const saveCat = (e) =>
@@ -127,7 +126,7 @@
 			return id ? categoryService.updateCategory(id, { name: name.trim(), icon, color }) : categoryService.createCategory({ name: name.trim(), type, icon, color });
 		});
 	const saveTransfer = (e) =>
-		submit(e, transferSheet, () => walletService.transfer({ from_wallet_id: tForm.from, to_wallet_id: tForm.to, amount: money(tForm.amountText) }));
+		submit(e, transferSheet, () => walletService.transfer({ from_wallet_id: tForm.from, to_wallet_id: tForm.to, amount: parseCurrencyInput(tForm.amountText) }));
 </script>
 
 <svelte:head><title>Billeteras · LUKA</title></svelte:head>
@@ -256,7 +255,7 @@
 		</div>
 		<div class="form-group">
 			<label for="w-bal">{wForm.id ? 'Saldo actual' : 'Saldo inicial'} ({wForm.currency})</label>
-			<input id="w-bal" bind:value={wForm.balanceText} oninput={fmt} inputmode="numeric" autocomplete="off" required />
+			<input id="w-bal" bind:value={wForm.balanceText} oninput={formatMoneyInput} inputmode="numeric" autocomplete="off" required />
 		</div>
 		<div class="form-group">
 			<label for="w-color">Color</label>
@@ -320,7 +319,7 @@
 		</div>
 		<div class="form-group">
 			<label for="t-amount">Monto ({fromW?.currency})</label>
-			<input id="t-amount" bind:value={tForm.amountText} oninput={fmt} inputmode="numeric" placeholder="Ej. 150.000" autocomplete="off" required aria-describedby="t-help" />
+			<input id="t-amount" bind:value={tForm.amountText} oninput={formatMoneyInput} inputmode="numeric" placeholder="Ej. 150.000" autocomplete="off" required aria-describedby="t-help" />
 			<small id="t-help" class="profile-help">Mueve el saldo sin contarlo como gasto ni ingreso del mes.</small>
 		</div>
 		{#if formError}<div class="alert-error" role="alert">{formError}</div>{/if}

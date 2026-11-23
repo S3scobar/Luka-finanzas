@@ -184,7 +184,7 @@ export const notificationService = {
                   icon: "ph-bold ph-handshake",
                   title: `Cuota de préstamo ${label}`,
                   message: `Tienes una cuota de préstamo pendiente de pago ($ ${loanSummary.totalDue.toLocaleString("es-CO")}).`,
-                  actionTab: "cards",
+                  actionTab: "loans",
                   actionLabel: "Ver cuotas"
                 });
               }
@@ -198,7 +198,7 @@ export const notificationService = {
                   icon: "ph-bold ph-warning",
                   title: "Cuota de préstamo vencida",
                   message: loanSummary.dueLabel || "Tienes un pago de préstamo pendiente con retraso.",
-                  actionTab: "cards",
+                  actionTab: "loans",
                   actionLabel: "Regularizar"
                 });
               }

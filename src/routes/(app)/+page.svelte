@@ -79,10 +79,7 @@
 
 	const visible = $derived(showAll ? d.transactions : d.transactions.slice(0, 5));
 
-	async function pay(section) {
-		(await import('#lib/views/creditView.js')).creditView.section = section;
-		goto('/credito');
-	}
+	const pay = (section) => goto(section === 'loans' ? '/credito#prestamos' : '/credito');
 
 	async function remove(t) {
 		if (!confirm('¿Deseas eliminar este movimiento? Su valor volverá a tu cuenta.')) return;
