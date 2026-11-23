@@ -10,6 +10,7 @@
 	import '#lib/styles/splash.css';
 	import '#lib/styles/liquid.css';
 	import '#lib/styles/app.css';
+	import '#lib/styles/desktop.css';
 
 	import { onMount, tick } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
