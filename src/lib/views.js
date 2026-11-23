@@ -1,6 +1,5 @@
 // Vistas heredadas (render imperativo) cargadas bajo demanda: cada pestaña es su propio fragmento de JS.
 const LOADERS = {
-  dashboard: () => import("./views/dashboardView.js").then((m) => m.dashboardView),
   wallets: () => import("./views/walletsView.js").then((m) => m.walletsView),
   budgets: () => import("./views/budgetsView.js").then((m) => m.budgetsView),
   cards: () => import("./views/creditView.js").then((m) => m.creditView),
