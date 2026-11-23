@@ -1,150 +1,109 @@
-/* css/splash.css — pantalla de apertura de LUKA
-   Se pinta desde el primer fotograma (HTML estático) y se anima solo con CSS;
-   js/components/splash.js únicamente permite saltarla y la retira al terminar. */
+/* splash.css — apertura de LUKA en liquid glass.
+   Está en el HTML prerenderizado y se anima solo con CSS desde el primer fotograma;
+   Splash.svelte únicamente permite saltarla y la retira al terminar (animación splash-out).
+   Secuencia (≈2,6 s): fondo con manchas de color → cápsula de vidrio con resorte → reflejo →
+   el símbolo se arma (asta, base, punto) → LUKA y lema → la cápsula se eleva y todo se disuelve. */
 
 #splash { display: none; }
 .splash-on #splash {
+  --ink: #0F172A;
+  --muted: #64748B;
+  --bg: #EEF2F6;
+  --glass: rgba(255, 255, 255, 0.42);
+  --rim: rgba(255, 255, 255, 0.95);
+  --rim-low: rgba(255, 255, 255, 0.35);
+  --shadow: 0 30px 70px -24px rgba(30, 64, 175, 0.45), 0 8px 20px -10px rgba(15, 23, 42, 0.18);
+  --spring: cubic-bezier(0.34, 1.45, 0.5, 1);
+  --smooth: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
   inset: 0;
   z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   overflow: hidden;
-  background: #050B1A;
-  color: #E6EBF5;
-  /* Salida: se desvanece mientras se acerca un poco. forwards deja visibility:hidden como seguro */
-  animation: splash-out 0.55s cubic-bezier(0.4, 0, 0.2, 1) 3.1s forwards;
+  background: var(--bg);
+  color: var(--ink);
+  animation: splash-out 0.6s var(--smooth) 2.25s forwards;
+}
+:root[data-theme="dark"] .splash-on #splash,
+.splash-on[data-theme="dark"] #splash {
+  --ink: #E6EBF5;
+  --muted: #94A3B8;
+  --bg: #0B1220;
+  --glass: rgba(19, 28, 46, 0.55);
+  --rim: rgba(255, 255, 255, 0.28);
+  --rim-low: rgba(255, 255, 255, 0.06);
+  --shadow: 0 30px 80px -24px rgba(0, 0, 0, 0.8), 0 0 60px -20px rgba(59, 130, 246, 0.45);
 }
 .splash-on #splash.splash-skip { animation: splash-out 0.3s ease-in 0s forwards; }
 
 @keyframes splash-out {
-  0%   { opacity: 1; transform: scale(1); visibility: visible; }
+  0%   { opacity: 1; visibility: visible; }
   99%  { visibility: visible; }
-  100% { opacity: 0; transform: scale(1.04); visibility: hidden; }
+  100% { opacity: 0; visibility: hidden; }
 }
 
-/* Fondo: azul marino con resplandor azul arriba y verde abajo, y una retícula casi invisible */
-.splash-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(60vmax 60vmax at 12% 8%, rgba(37, 99, 235, 0.42), transparent 62%),
-    radial-gradient(55vmax 55vmax at 92% 92%, rgba(16, 185, 129, 0.30), transparent 62%),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 44px),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 44px),
-    #050B1A;
-  animation: splash-fade 0.6s ease-out both;
-}
+/* Fondo: manchas de color que el vidrio refracta; se mueven despacio para que el vidrio “viva” */
+.splash-bg { position: absolute; inset: 0; animation: sp-fade 0.5s ease-out both; }
+.blob { position: absolute; border-radius: 50%; filter: blur(48px); opacity: 0.75; animation: sp-drift 6s ease-in-out infinite alternate; }
+.b1 { width: 46vmax; height: 46vmax; left: -10vmax; top: -12vmax; background: #3B82F6; }
+.b2 { width: 38vmax; height: 38vmax; right: -12vmax; bottom: -10vmax; background: #10B981; opacity: 0.55; animation-delay: -2s; }
+.b3 { width: 22vmax; height: 22vmax; left: 50%; top: 52%; translate: -50% -50%; background: #2563EB; opacity: 0.5; animation-duration: 4s; }
+:root[data-theme="dark"] .blob { opacity: 0.45; }
 
-.splash-stage {
+.splash-stage { position: relative; display: grid; justify-items: center; }
+
+/* Cápsula de vidrio: entra con resorte y al final se eleva y crece mientras todo se disuelve */
+.splash-glass {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: -6vh;
-  text-align: center;
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  border-radius: 34px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(190%);
+  backdrop-filter: blur(22px) saturate(190%);
+  border: 1px solid var(--rim);
+  border-bottom-color: var(--rim-low);
+  box-shadow: var(--shadow), inset 0 1px 0 var(--rim), inset 0 -10px 24px -14px rgba(37, 99, 235, 0.35);
+  overflow: hidden;
+  animation: sp-pop 0.8s var(--spring) 0.1s both, sp-lift 0.6s var(--smooth) 2.25s forwards;
 }
-
-/* Anillos que se expanden desde el logo */
-.splash-ripple {
+/* Reflejo que cruza el vidrio una vez */
+.splash-sheen {
   position: absolute;
-  top: 60px;
-  left: 50%;
-  width: 140px;
-  height: 140px;
-  margin: -70px 0 0 -70px;
-  border-radius: 50%;
-  border: 2px solid rgba(147, 197, 253, 0.6);
-  box-shadow: 0 0 40px rgba(59, 130, 246, 0.35), inset 0 0 30px rgba(96, 165, 250, 0.18);
-  opacity: 0;
-  animation: splash-ripple 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) 0.15s both;
+  inset: -40%;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.75) 50%, transparent 60%);
+  translate: -70% 0;
+  animation: sp-sheen 1s var(--smooth) 0.55s forwards;
 }
-.splash-ripple.r2 { animation-delay: 0.5s; border-color: rgba(52, 211, 153, 0.45); }
+:root[data-theme="dark"] .splash-sheen { background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.22) 50%, transparent 60%); }
 
-@keyframes splash-ripple {
-  0%   { opacity: 0.95; transform: scale(0.35); }
-  100% { opacity: 0;    transform: scale(4.2); }
-}
+/* Símbolo por piezas */
+.splash-mark { position: relative; width: 66px; height: 66px; overflow: visible; }
+.m-stem { fill: #2563EB; transform-box: fill-box; transform-origin: 50% 100%; animation: sp-grow 0.45s var(--smooth) 0.55s both; }
+.m-base { fill: #3B82F6; transform-box: fill-box; animation: sp-slide 0.45s var(--spring) 0.85s both; }
+.m-dot { fill: #10B981; transform-box: fill-box; transform-origin: 50% 50%; animation: sp-drop 0.6s var(--spring) 1.15s both; }
 
-/* Arco grande que se dibuja alrededor del logo */
-.splash-ring {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  width: min(88vw, 380px);
-  height: min(88vw, 380px);
-  margin: calc(min(88vw, 380px) / -2) 0 0 calc(min(88vw, 380px) / -2);
-  transform: rotate(-90deg);
-  animation: splash-ring-spin 3.6s linear both;
-}
-.splash-ring circle {
-  fill: none;
-  stroke: rgba(96, 165, 250, 0.4);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-dasharray: 578;
-  stroke-dashoffset: 578;
-  animation: splash-ring-draw 1.3s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
-}
-@keyframes splash-ring-draw { to { stroke-dashoffset: 0; } }
-@keyframes splash-ring-spin { from { transform: rotate(-90deg); } to { transform: rotate(40deg); } }
+/* Nombre y lema */
+.splash-word { display: flex; gap: 0.06em; margin-top: 22px; font-size: 2.6rem; font-weight: 800; letter-spacing: 0.02em; color: var(--ink); animation: sp-away 0.5s var(--smooth) 2.25s forwards; }
+.splash-word span { display: inline-block; animation: sp-rise 0.6s var(--smooth) both; }
+.splash-word span:nth-child(1) { animation-delay: 1.3s; }
+.splash-word span:nth-child(2) { animation-delay: 1.38s; }
+.splash-word span:nth-child(3) { animation-delay: 1.46s; }
+.splash-word span:nth-child(4) { animation-delay: 1.54s; }
+.splash-tag { margin: 6px 0 0; font-size: var(--fs-base, 0.9375rem); font-weight: 500; color: var(--muted); animation: sp-rise 0.6s var(--smooth) 1.75s both, sp-away 0.5s var(--smooth) 2.25s forwards; }
+.splash-tag em { font-style: normal; color: #2563EB; font-weight: 700; }
+:root[data-theme="dark"] .splash-tag em { color: #60A5FA; }
 
-/* Logo: entra girando y rebota al asentarse */
-.splash-logo {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  filter: drop-shadow(0 14px 30px rgba(37, 99, 235, 0.45));
-  animation: splash-logo-in 1s cubic-bezier(0.34, 1.5, 0.64, 1) 0.1s both;
-}
-@keyframes splash-logo-in {
-  0%   { opacity: 0; transform: rotate(-200deg) scale(0.2); }
-  35%  { opacity: 1; }
-  100% { opacity: 1; transform: none; }
-}
-
-/* LUKA: las letras caen una a una, cada una con su inclinación */
-.splash-word {
-  display: flex;
-  margin-top: 6px;
-  font-size: clamp(3.4rem, 17vw, 5rem);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-}
-.splash-word span {
-  display: inline-block;
-  opacity: 0;
-  animation: splash-drop 0.8s cubic-bezier(0.3, 1.45, 0.5, 1) both;
-  animation-delay: calc(1s + var(--i) * 0.09s);
-}
-.splash-word span:nth-child(1) { --i: 0; --r: -16deg; }
-.splash-word span:nth-child(2) { --i: 1; --r: 11deg; }
-.splash-word span:nth-child(3) { --i: 2; --r: -9deg; }
-.splash-word span:nth-child(4) { --i: 3; --r: 18deg; }
-
-@keyframes splash-drop {
-  0%   { opacity: 0; transform: translateY(-44px) rotate(var(--r)) scale(0.85); }
-  30%  { opacity: 1; }
-  100% { opacity: 1; transform: none; }
-}
-
-.splash-tag {
-  margin-top: 0.4rem;
-  font-size: clamp(0.95rem, 4.2vw, 1.15rem);
-  font-weight: 500;
-  color: #C7D2E5;
-  animation: splash-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 1.65s both;
-}
-.splash-tag em {
-  font-style: normal;
-  font-weight: 700;
-  background: linear-gradient(90deg, #60A5FA, #34D399);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-@keyframes splash-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes splash-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes sp-fade { from { opacity: 0; } }
+@keyframes sp-drift { to { transform: translate(6vmax, 4vmax) scale(1.08); } }
+@keyframes sp-pop { from { opacity: 0; transform: scale(0.6) translateY(16px); filter: blur(8px); } }
+@keyframes sp-lift { to { transform: translateY(-18px) scale(1.12); filter: blur(6px); opacity: 0; } }
+@keyframes sp-sheen { to { translate: 70% 0; } }
+@keyframes sp-grow { from { transform: scaleY(0); } }
+@keyframes sp-slide { from { transform: translateX(-40%); opacity: 0; } }
+@keyframes sp-drop { 0% { transform: translateY(-120%) scale(0.4); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes sp-rise { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } }
+@keyframes sp-away { to { opacity: 0; transform: translateY(-10px); filter: blur(4px); } }
