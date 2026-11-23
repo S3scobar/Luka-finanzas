@@ -1,7 +1,6 @@
 // Vistas heredadas (render imperativo) cargadas bajo demanda: cada pestaña es su propio fragmento de JS.
 const LOADERS = {
   savings: () => import("./views/savingsView.js").then((m) => m.savingsView),
-  analytics: () => import("./views/analyticsView.js").then((m) => m.analyticsView)
 };
 
 const loaded = new Map();
