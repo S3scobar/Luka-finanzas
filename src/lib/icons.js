@@ -3,6 +3,7 @@ import { escapeHtml } from "./utils.js";
 
 // Mapeo exhaustivo para transformar iconos existentes en la BD a Phosphor Duotone
 export const FA_TO_PHOSPHOR = {
+  "ph-tags": "ph-bold ph-tag", // no existe en Phosphor: categorías guardadas con este icono salían en blanco
   // Navegación y Finanzas
   "fa-house": "ph-bold ph-house-line",
   "fa-wallet": "ph-bold ph-wallet",
@@ -146,7 +147,7 @@ export const FA_TO_PHOSPHOR = {
   "fa-ring": "ph-bold ph-circle-notch",
   "fa-gift": "ph-bold ph-gift",
   "fa-store": "ph-bold ph-storefront",
-  "fa-tags": "ph-bold ph-tags",
+  "fa-tags": "ph-bold ph-tag",
   "fa-box-open": "ph-bold ph-package",
   "fa-scissors": "ph-bold ph-scissors",
 
@@ -275,7 +276,7 @@ export const CATEGORY_ICON_GROUPS = [
     label: "Compras y moda",
     icons: [
       "ph-shopping-bag-open", "ph-shopping-cart-simple", "ph-basket", "ph-t-shirt", "ph-eyeglasses",
-      "ph-sketch-logo", "ph-gift", "ph-storefront", "ph-tags", "ph-package", "ph-scissors"
+      "ph-sketch-logo", "ph-gift", "ph-storefront", "ph-tag", "ph-package", "ph-scissors"
     ]
   },
   {

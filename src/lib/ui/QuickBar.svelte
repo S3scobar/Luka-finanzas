@@ -5,6 +5,7 @@
 	import { transactionService } from '#lib/services/transactionService.js';
 	import { creditCardService } from '#lib/services/creditCardService.js';
 	import { resolveIconClass } from '#lib/icons.js';
+	import Sheet from './Sheet.svelte';
 
 	let { wallets, categories, creditCards = [], onsaved } = $props();
 
@@ -176,14 +177,14 @@
 	<div class="categories-action-section">
 		<span class="action-hint">Toca una categoría para guardar el {isExpense ? 'gasto' : 'ingreso'}:</span>
 		<div class="quick-icons-row">
-			{#each isExpense ? favorites : typeCats as cat (cat.id)}
+			{#each isExpense ? favorites : typeCats.slice(0, 4) as cat (cat.id)}
 				<button type="button" class="btn-fav-category" title={cat.name} onclick={() => save(cat.id)}>
 					<div class="fav-icon-box" style:background-color={cat.color + '20'} style:color={cat.color}><i class={icon(cat)} aria-hidden="true"></i></div>
 					<span class="fav-label">{cat.name}</span>
 				</button>
 			{/each}
-			{#if isExpense}
-				<button type="button" class="btn-fav-category btn-more" title="Otras categorías" aria-haspopup="dialog" onclick={() => picker.showModal()}>
+			{#if isExpense || typeCats.length > 4}
+				<button type="button" class="btn-fav-category btn-more" title="Otras categorías" aria-haspopup="dialog" onclick={() => picker.open()}>
 					<div class="fav-icon-box"><i class="ph-bold ph-plus" aria-hidden="true"></i></div>
 					<span class="fav-label">Más</span>
 				</button>
@@ -192,11 +193,7 @@
 	</div>
 </div>
 
-<dialog bind:this={picker} class="modal-content sheet" aria-labelledby="cat-picker-title" closedby="any">
-	<div class="modal-header">
-		<h1 id="cat-picker-title">Selecciona una categoría</h1>
-		<form method="dialog"><button class="modal-close-btn" aria-label="Cerrar">&times;</button></form>
-	</div>
+<Sheet bind:this={picker} title="Selecciona una categoría">
 	<div class="modal-categories-grid">
 		{#each typeCats as cat (cat.id)}
 			<button type="button" class="cat-modal-btn" onclick={() => (picker.close(), save(cat.id))}>
@@ -205,7 +202,7 @@
 			</button>
 		{/each}
 	</div>
-</dialog>
+</Sheet>
 
 {#if saving}
 	<div class="expense-anim-overlay" out:fade={{ duration: 250 }} role="status">
