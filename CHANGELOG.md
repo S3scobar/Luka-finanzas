@@ -7,6 +7,19 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [3.0.0] - 2026-11-23
+
+### Añadido
+
+- Páginas de privacidad y términos, enlazadas desde el pie.
+
+### Cambiado
+
+- **Incompatible:** la app pasa a SvelteKit 3 con rutas prerenderizadas: cada pestaña tiene su propia dirección.
+- Política de seguridad de contenido (CSP) y cabeceras de seguridad en Vercel.
+- El conversor es la primera vista nativa en Svelte; el resto se migra por fases.
+- La CI ejecuta pruebas, svelte-check y build.
+
 ## [2.4.0] - 2026-11-21
 
 ### Añadido
@@ -115,6 +128,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[3.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.4.0...v3.0.0
 [2.4.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.1.0...v2.2.0
