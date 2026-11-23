@@ -3,7 +3,6 @@
 import { goto } from "$app/navigation";
 import { session } from "./session.svelte.js";
 import { TABS, pathOf, tabIndex } from "./tabs.js";
-import { resetViews } from "./views.js";
 import { authService } from "./services/authService.js";
 import { authView } from "./views/authView.js";
 import { resetCurrencyState } from "./services/currencyService.js";
@@ -23,7 +22,6 @@ const goTab = (key) => {
 };
 
 function resetAll() {
-  resetViews();
   resetCurrencyState();
 }
 
