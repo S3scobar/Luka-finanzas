@@ -1,0 +1,33 @@
+{
+	"name": "luka",
+	"version": "3.0.0",
+	"private": true,
+	"type": "module",
+	"imports": {
+		"#lib/*": "./src/lib/*"
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --threshold error",
+		"test": "node --import ./tests/helpers/register.mjs --test tests/*.test.mjs"
+	},
+	"engines": {
+		"node": ">=22.17"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-vercel": "^7.0.5",
+		"@sveltejs/kit": "^3.4.0",
+		"@sveltejs/vite-plugin-svelte": "^7.3.1",
+		"svelte": "^5.59.1",
+		"svelte-check": "^4.7.8",
+		"vite": "^8.3.8"
+	},
+	"dependencies": {
+		"@fortawesome/fontawesome-free": "^6.5.1",
+		"@phosphor-icons/web": "^2.1.2",
+		"@supabase/supabase-js": "^2.119.2"
+	}
+}
