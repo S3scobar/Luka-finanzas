@@ -3,6 +3,16 @@
    TOKENS DE DISEÑO — TEMA CLARO (por defecto)
    ========================================== */
 :root {
+  /* Escala tipográfica (manual de marca): 11 · 12 · 13 · 14 · 15 · 17 px */
+  --fs-2xs: 0.6875rem;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-md: 0.875rem;
+  --fs-base: 0.9375rem;
+  --fs-lg: 1.0625rem;
+  /* Esmeralda del logo: acento de marca para metas cumplidas y celebraciones (el éxito de sistema es --success) */
+  --accent: #10B981;
+
   color-scheme: light;
 
   /* Superficies */
@@ -233,8 +243,8 @@ body {
   gap: 0.55rem;
   padding: 0.7rem 1.4rem;
   border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 650;
+  font-size: var(--fs-md);
+  font-weight: 600;
   letter-spacing: 0.01em;
   cursor: pointer;
   color: var(--text-main);
@@ -250,7 +260,7 @@ body {
 
 .btn-install i {
   color: var(--primary);
-  font-size: 0.95rem;
+  font-size: var(--fs-base);
 }
 
 .btn-install:hover {
@@ -262,13 +272,13 @@ body {
 .btn-install:active { transform: scale(0.97); }
 
 .footer-author {
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   color: var(--text-faint);
   letter-spacing: 0.2px;
 }
 
 .footer-author span {
-  font-weight: 650;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
@@ -280,7 +290,7 @@ body {
   flex-direction: column;
   gap: 0.6rem;
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
 }
 
