@@ -1,6 +1,5 @@
 <script>
 	// Inicio: métricas del mes, avisos de pago, registro rápido y movimientos (antes views/dashboardView.js)
-	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { walletService } from '#lib/services/walletService.js';
@@ -12,7 +11,15 @@
 	import { resolveIconClass } from '#lib/icons.js';
 	import { formatShortDate, notifyError } from '#lib/utils.js';
 	import { skeletonHtml } from '#lib/components/skeleton.js';
+	import { MediaQuery } from 'svelte/reactivity';
 	import QuickBar from '#lib/ui/QuickBar.svelte';
+
+	// En computador el Inicio es un panel completo; se descarga solo allí y el celular no cambia
+	const wide = new MediaQuery('min-width: 1100px');
+	let Panel = $state(null);
+	$effect(() => {
+		if (wide.current && !Panel) import('#lib/ui/desktop/DesktopPanel.svelte').then((m) => (Panel = m.default));
+	});
 
 	let d = $state(null);
 	let error = $state('');
@@ -37,7 +44,10 @@
 			error = err?.message || 'Error desconocido';
 		}
 	}
-	onMount(load);
+	// La vista de celular carga sus datos solo cuando se muestra
+	$effect(() => {
+		if (!wide.current && !d) load();
+	});
 
 	const totals = $derived.by(() => {
 		if (!d) return null;
@@ -97,7 +107,9 @@
 
 <div>
 	<h1 class="sr-only">Inicio</h1>
-	{#if error && !d}
+	{#if wide.current}
+		{#if Panel}<Panel />{:else}{@html skeletonHtml()}{/if}
+	{:else if error && !d}
 		<div class="alert-error" role="alert">Error al cargar el inicio: {error}</div>
 	{:else if !d}
 		{@html skeletonHtml()}
