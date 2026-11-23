@@ -10,5 +10,6 @@ export const TABS = [
   { key: "converter", path: "/conversor", label: "Conversor", icon: "ph-currency-circle-dollar" }
 ];
 
-export const pathOf = (key) => TABS.find((t) => t.key === key)?.path;
+// "loans" no es pestaña: abre Crédito directo en préstamos (avisos de cuotas)
+export const pathOf = (key) => (key === 'loans' ? '/credito#prestamos' : TABS.find((t) => t.key === key)?.path);
 export const tabIndex = (pathname) => TABS.findIndex((t) => t.path === pathname);

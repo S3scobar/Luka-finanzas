@@ -10,6 +10,7 @@
 	import '#lib/styles/splash.css';
 	import '#lib/styles/liquid.css';
 	import '#lib/styles/app.css';
+	import '#lib/styles/desktop.css';
 
 	import { onMount, tick } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
@@ -79,6 +80,14 @@
 	});
 
 	const logout = async () => (await controller)?.logout();
+
+	// El perfil se descarga la primera vez que se abre
+	let Profile = $state(null);
+	let profile = $state(null);
+	async function openProfile() {
+		if (profile) return profile.open();
+		Profile = (await import('#lib/ui/ProfileSheet.svelte')).default;
+	}
 	const startTour = async () => (await controller)?.startTour();
 </script>
 
@@ -106,13 +115,14 @@
 			<i class="ph-bold ph-moon-stars" aria-hidden="true"></i>
 		</button>
 		<div id="user-menu" class="user-menu-box" hidden={!loggedIn}>
-			<span id="user-name" class="sr-only">{session.name}</span>
-			<button id="btn-logout" class="btn-logout-icon" type="button" title="Cerrar sesión" aria-label="Cerrar sesión" onclick={logout}>
-				<i class="ph-duotone ph-sign-out" aria-hidden="true"></i>
+			<button id="btn-profile" class="btn-theme-icon btn-profile" type="button" title="Mi perfil" aria-label="Mi perfil de {session.name}" aria-haspopup="dialog" onclick={openProfile}>
+				<i class="ph-bold ph-user-circle" aria-hidden="true"></i>
 			</button>
 		</div>
 	</div>
 </header>
+
+{#if Profile && loggedIn}<Profile bind:this={profile} onlogout={logout} />{/if}
 
 <main id="main" class="container" tabindex="-1">
 	{@render children()}

@@ -1,8 +1,8 @@
 // js/icons.js — Sistema moderno de iconos Liquid Glass para LUKA (Phosphor Duotone + fallback FA).
-import { escapeHtml } from "./utils.js";
 
 // Mapeo exhaustivo para transformar iconos existentes en la BD a Phosphor Duotone
 export const FA_TO_PHOSPHOR = {
+  "ph-tags": "ph-bold ph-tag", // no existe en Phosphor: categorías guardadas con este icono salían en blanco
   // Navegación y Finanzas
   "fa-house": "ph-bold ph-house-line",
   "fa-wallet": "ph-bold ph-wallet",
@@ -146,7 +146,7 @@ export const FA_TO_PHOSPHOR = {
   "fa-ring": "ph-bold ph-circle-notch",
   "fa-gift": "ph-bold ph-gift",
   "fa-store": "ph-bold ph-storefront",
-  "fa-tags": "ph-bold ph-tags",
+  "fa-tags": "ph-bold ph-tag",
   "fa-box-open": "ph-bold ph-package",
   "fa-scissors": "ph-bold ph-scissors",
 
@@ -230,13 +230,6 @@ export function resolveIconClass(name) {
   return trimmed;
 }
 
-// Devuelve el HTML listo para renderizar el icono
-export function iconHtml(name, extraClass = "") {
-  const cls = resolveIconClass(name);
-  const extra = extraClass ? ` ${extraClass}` : "";
-  return `<i class="${cls}${extra}"></i>`;
-}
-
 // Grupos de iconos para el selector de categorías (Phosphor Duotone de alta calidad)
 export const CATEGORY_ICON_GROUPS = [
   {
@@ -275,7 +268,7 @@ export const CATEGORY_ICON_GROUPS = [
     label: "Compras y moda",
     icons: [
       "ph-shopping-bag-open", "ph-shopping-cart-simple", "ph-basket", "ph-t-shirt", "ph-eyeglasses",
-      "ph-sketch-logo", "ph-gift", "ph-storefront", "ph-tags", "ph-package", "ph-scissors"
+      "ph-sketch-logo", "ph-gift", "ph-storefront", "ph-tag", "ph-package", "ph-scissors"
     ]
   },
   {
@@ -329,41 +322,3 @@ export const SAVING_ICONS = [
   "ph-suitcase", "ph-gift", "ph-camera", "ph-plant", "ph-rocket-launch", "ph-crown",
   "ph-star", "ph-target", "ph-coins"
 ];
-
-// HTML del selector de iconos en modal
-export function iconPickerHtml(groups, selected) {
-  const normSelected = resolveIconClass(selected);
-  return `
-    <div class="icon-picker">
-      ${groups.map(group => `
-        <div class="icon-group">
-          ${group.label ? `<span class="icon-group-label">${escapeHtml(group.label)}</span>` : ""}
-          <div class="icon-picker-grid">
-            ${group.icons.map(icon => {
-              const normIcon = resolveIconClass(icon);
-              const isSelected = icon === selected || normIcon === normSelected;
-              const title = icon.replace("ph-", "").replace("fa-", "").replace(/-/g, " ");
-              return `
-                <button type="button" class="icon-choice ${isSelected ? "selected" : ""}" data-icon="${icon}" title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">
-                  ${iconHtml(icon)}
-                </button>
-              `;
-            }).join("")}
-          </div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-
-// Marca el icono elegido y avisa con onSelect(icono)
-export function bindIconPicker(root, onSelect) {
-  const buttons = root.querySelectorAll(".icon-choice");
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      buttons.forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      onSelect(btn.dataset.icon);
-    });
-  });
-}

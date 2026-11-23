@@ -119,7 +119,7 @@
 						<p>Tus totales (saldo, ingresos y gastos) se muestran en esta moneda, aunque tengas cuentas en otras.</p>
 					</div>
 				</div>
-				<select value={base} onchange={onBase} aria-labelledby="fx-base-title">
+				<select id="fx-base" value={base} onchange={onBase} aria-labelledby="fx-base-title">
 					{#each Object.entries(CURRENCIES) as [code, c] (code)}<option value={code}>{code} · {c.name}</option>{/each}
 				</select>
 			</section>
