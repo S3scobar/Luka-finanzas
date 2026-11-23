@@ -1,10 +1,7 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import { SUPABASE_CONFIG } from "./config.js";
+import { createClient } from "@supabase/supabase-js";
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$app/env/public";
 
-export const supabase = createClient(
-  SUPABASE_CONFIG.url,
-  SUPABASE_CONFIG.anonKey
-);
+export const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 // Devuelve el id del usuario autenticado leyendo la sesión local.
 // A diferencia de supabase.auth.getUser(), no hace una petición de red en cada llamada;
