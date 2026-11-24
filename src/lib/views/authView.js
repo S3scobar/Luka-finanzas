@@ -28,6 +28,7 @@ export const authView = {
             </svg>
             <span id="google-btn-text">Continuar con Google</span>
           </button>
+          <div id="google-gis" class="google-gis" hidden></div>
 
           <div class="auth-divider">
             <span>o con tu celular</span>
@@ -86,6 +87,20 @@ export const authView = {
       const submitBtn = document.getElementById("auth-submit-btn");
       const googleBtn = document.getElementById("btn-google-login");
       const googleBtnText = document.getElementById("google-btn-text");
+
+      // Con ID de cliente configurado se usa el botón oficial de Google; si no, el flujo OAuth de abajo
+      const gisHost = document.getElementById("google-gis");
+      gisHost.hidden = false;
+      authService
+        .mountGoogleButton(gisHost, (err) => {
+          errorDiv.textContent = err.message || "Error al conectar con Google";
+          errorDiv.style.display = "block";
+        })
+        .then((ok) => {
+          googleBtn.hidden = ok;
+          gisHost.hidden = !ok;
+        })
+        .catch(() => (gisHost.hidden = true));
 
       // Animación e inicio con Google OAuth
       googleBtn.addEventListener("click", async () => {

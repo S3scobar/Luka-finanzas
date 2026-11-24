@@ -1,4 +1,5 @@
 // js/services/authService.js
+import { PUBLIC_GOOGLE_CLIENT_ID } from "$app/env/public";
 import { supabase, isMissingRpc } from "../supabaseClient.js";
 
 // Limpia y normaliza el número a solo dígitos (elimina prefijo +57 si viene con él)
@@ -22,7 +23,40 @@ export const authService = {
     return `${clean}@phone.luka.app`;
   },
 
-  // Iniciar sesión con Google OAuth
+  // Botón oficial de Google (Google Identity Services): Google habla con el dominio de LUKA y
+  // no con el de Supabase, así que su pantalla muestra LUKA. Devuelve false si no hay ID de cliente.
+  async mountGoogleButton(host, onError) {
+    if (!PUBLIC_GOOGLE_CLIENT_ID) return false;
+    await loadGsi();
+    // El nonce cifrado va a Google y el original a Supabase, que comprueba que coincidan
+    const raw = crypto.randomUUID() + crypto.randomUUID();
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+    const hashed = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    google.accounts.id.initialize({
+      client_id: PUBLIC_GOOGLE_CLIENT_ID,
+      nonce: hashed,
+      context: "signin",
+      ux_mode: "popup",
+      itp_support: true,
+      use_fedcm_for_button: true,
+      callback: async ({ credential }) => {
+        const { error } = await supabase.auth.signInWithIdToken({ provider: "google", token: credential, nonce: raw });
+        if (error) onError?.(error);
+      }
+    });
+    google.accounts.id.renderButton(host, {
+      theme: document.documentElement.dataset.theme === "dark" ? "filled_black" : "outline",
+      size: "large",
+      shape: "pill",
+      text: "continue_with",
+      logo_alignment: "center",
+      locale: "es",
+      width: Math.min(400, host.clientWidth || 320)
+    });
+    return true;
+  },
+
+  // Respaldo: OAuth a través de Supabase (Google muestra el dominio de Supabase)
   async signInWithGoogle() {
     const redirectTo = window.location.origin + window.location.pathname;
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -172,3 +206,15 @@ export const authService = {
     }
   }
 };
+let gsi;
+function loadGsi() {
+  gsi ??= new Promise((resolve, reject) => {
+    const el = document.createElement("script");
+    el.src = "https://accounts.google.com/gsi/client";
+    el.async = true;
+    el.onload = resolve;
+    el.onerror = () => { gsi = null; reject(new Error("No se pudo cargar el inicio de sesión de Google")); };
+    document.head.append(el);
+  });
+  return gsi;
+}
