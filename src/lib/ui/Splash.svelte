@@ -34,14 +34,21 @@
 		onpointerdown={() => (skip = true)}
 		onanimationend={(e) => e.target === e.currentTarget && e.animationName === 'splash-out' && finish()}
 	>
-		<div class="splash-bg"></div>
+		<div class="splash-bg">
+			<i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+		</div>
 		<div class="splash-stage">
-			<div class="splash-ripple"></div>
-			<div class="splash-ripple r2"></div>
-			<svg class="splash-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" /></svg>
-			<img class="splash-logo" src="/favicon.svg" alt="" />
+			<div class="splash-glass">
+				<span class="splash-sheen"></span>
+				<!-- El símbolo se arma por piezas, como lo explica el manual: asta, base que acelera y punto -->
+				<svg class="splash-mark" viewBox="128 116 268 280">
+					<path class="m-stem" d="M148 136H228V376H148Z" />
+					<path class="m-base" d="M228 300H376L300 376H228Z" />
+					<circle class="m-dot" cx="356" cy="156" r="26" />
+				</svg>
+			</div>
 			<div class="splash-word"><span>L</span><span>U</span><span>K</span><span>A</span></div>
-			<p class="splash-tag">Tus finanzas, <em>bajo control.</em></p>
+			<p class="splash-tag">Tu plata, <em>clara.</em></p>
 		</div>
 	</div>
 {/if}
