@@ -1673,3 +1673,6 @@ i.text-danger, :root[data-theme="dark"] i.text-danger { color: var(--danger); }
 
 .loan-check { display: flex; align-items: center; gap: 0.5rem; margin: 0.25rem 0 0.9rem; font-size: var(--fs-md); font-weight: 600; cursor: pointer; }
 .loan-check input { width: 18px; height: 18px; accent-color: var(--primary); }
+
+/* Botón oficial de Google: centrado y con la misma altura que el resto */
+.google-gis { display: flex; justify-content: center; min-height: 44px; }
