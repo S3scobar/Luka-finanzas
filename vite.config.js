@@ -15,12 +15,14 @@ export default defineConfig({
 				mode: 'hash',
 				directives: {
 					'default-src': ['self'],
-					'script-src': ['self'],
+					'script-src': ['self', 'https://accounts.google.com/gsi/client'],
 					// Las vistas heredadas usan atributos style="…"
-					'style-src': ['self', 'unsafe-inline'],
-					'img-src': ['self', 'data:', 'blob:'],
+					'style-src': ['self', 'unsafe-inline', 'https://accounts.google.com/gsi/style'],
+					'img-src': ['self', 'data:', 'blob:', 'https://*.googleusercontent.com'],
 					'font-src': ['self', 'data:'],
-					'connect-src': ['self', 'https://*.supabase.co', 'wss://*.supabase.co', 'https://open.er-api.com'],
+					'connect-src': ['self', 'https://open.er-api.com', 'https://accounts.google.com/gsi/'],
+					// Botón oficial de Google (iniciar sesión en el dominio de LUKA)
+					'frame-src': ['https://accounts.google.com/gsi/'],
 					'manifest-src': ['self'],
 					'worker-src': ['self'],
 					'object-src': ['none'],
