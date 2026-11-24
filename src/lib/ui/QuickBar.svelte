@@ -86,41 +86,43 @@
 	}
 </script>
 
-<div class="quick-expense-card">
-	<div class="type-toggle-pill" class:is-expense={isExpense} class:is-income={!isExpense} role="group" aria-label="Tipo de movimiento">
-		<span class="toggle-slider-blob" aria-hidden="true"></span>
-		<button type="button" class="toggle-btn" class:active={isExpense} class:expense={isExpense} aria-pressed={isExpense} onclick={() => (type = 'expense')}>
-			<i class="ph-bold ph-trend-down" aria-hidden="true"></i> Gasto
+<div class="quick-expense-card qb" class:is-income={!isExpense}>
+	<!-- Tipo: una sola pastilla de vidrio que se desliza -->
+	<div class="qb-seg" role="group" aria-label="Tipo de movimiento">
+		<span class="qb-thumb" aria-hidden="true"></span>
+		<button type="button" class:on={isExpense} aria-pressed={isExpense} onclick={() => (type = 'expense')}>
+			<i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i> Gasto
 		</button>
-		<button type="button" class="toggle-btn" class:active={!isExpense} class:income={!isExpense} aria-pressed={!isExpense} onclick={() => (type = 'income')}>
-			<i class="ph-bold ph-trend-up" aria-hidden="true"></i> Ingreso
+		<button type="button" class:on={!isExpense} aria-pressed={!isExpense} onclick={() => (type = 'income')}>
+			<i class="ph-bold ph-arrow-down-left" aria-hidden="true"></i> Ingreso
 		</button>
 	</div>
 
-	<div class="wallet-chips-section">
-		<span class="action-hint" id="qb-wallet-hint">
-			<i class="ph-duotone ph-wallet" aria-hidden="true"></i>
-			{isExpense ? '¿Con qué cuenta pagas?' : '¿A qué cuenta entra el dinero?'}
-		</span>
-		<div class="wallet-chips-row" role="radiogroup" aria-labelledby="qb-wallet-hint">
-			{#each wallets as w (w.id)}
-				{@const on = w.id === wallet?.id}
-				<button
-					type="button"
-					role="radio"
-					aria-checked={on}
-					class="wallet-chip-btn"
-					class:selected={on}
-					style:border-color={on ? w.color : null}
-					style:background-color={on ? w.color + '15' : null}
-					style:color={on ? w.color : null}
-					onclick={() => (walletId = w.id)}
-				>
-					<i class={resolveIconClass(w.icon)} aria-hidden="true"></i>
-					<span class="chip-name">{w.name}</span>
-				</button>
-			{/each}
-		</div>
+	<!-- El monto es lo principal: grande, sin caja -->
+	<label class="qb-amount">
+		<span class="sr-only">Valor</span>
+		<span class="qb-sign" aria-hidden="true">{isExpense ? '−' : '+'} {CURRENCIES[wallet?.currency]?.symbol || '$'}</span>
+		<input bind:this={amountInput} value={amountText} oninput={onAmount} type="text" inputmode="numeric" placeholder="0" autocomplete="off" enterkeyhint="next" />
+	</label>
+	<input
+		class="qb-title"
+		bind:this={titleInput}
+		bind:value={title}
+		type="text"
+		aria-label={isExpense ? 'Concepto del gasto' : 'Concepto del ingreso'}
+		placeholder={isExpense ? '¿En qué? Ej. Almuerzo' : '¿De qué? Ej. Sueldo'}
+		autocomplete="off"
+		enterkeyhint="done"
+	/>
+
+	<div class="qb-wallets" role="radiogroup" aria-label={isExpense ? 'Cuenta con la que pagas' : 'Cuenta a la que entra'}>
+		<span class="qb-k" aria-hidden="true">{isExpense ? 'Pagas con' : 'Entra a'}</span>
+		{#each wallets as w (w.id)}
+			{@const on = w.id === wallet?.id}
+			<button type="button" role="radio" aria-checked={on} class="qb-chip" class:on style:--c={w.color || 'var(--primary)'} onclick={() => (walletId = w.id)}>
+				<i class={resolveIconClass(w.icon)} aria-hidden="true"></i>{w.name}
+			</button>
+		{/each}
 	</div>
 
 	{#if card}
@@ -154,42 +156,22 @@
 		</div>
 	{/if}
 
-	<div class="quick-inputs-row">
-		<div class="input-field input-title">
-			<input
-				bind:this={titleInput}
-				bind:value={title}
-				type="text"
-				aria-label={isExpense ? 'Concepto del gasto' : 'Concepto del ingreso'}
-				placeholder={isExpense ? '¿En qué gastaste? (Ej. Almuerzo)' : '¿Concepto del ingreso? (Ej. Sueldo)'}
-				autocomplete="off"
-				enterkeyhint="next"
-			/>
-		</div>
-		<div class="input-field input-amount">
-			<span class="currency-symbol" aria-hidden="true">{CURRENCIES[wallet?.currency]?.symbol || '$'}</span>
-			<input bind:this={amountInput} value={amountText} oninput={onAmount} type="text" inputmode="numeric" aria-label="Valor" placeholder="0" autocomplete="off" />
-		</div>
-	</div>
-
 	{#if error}<div class="alert-error" role="alert">{error}</div>{/if}
 
-	<div class="categories-action-section">
-		<span class="action-hint">Toca una categoría para guardar el {isExpense ? 'gasto' : 'ingreso'}:</span>
-		<div class="quick-icons-row">
-			{#each isExpense ? favorites : typeCats.slice(0, 4) as cat (cat.id)}
-				<button type="button" class="btn-fav-category" title={cat.name} onclick={() => save(cat.id)}>
-					<div class="fav-icon-box" style:background-color={cat.color + '20'} style:color={cat.color}><i class={icon(cat)} aria-hidden="true"></i></div>
-					<span class="fav-label">{cat.name}</span>
-				</button>
-			{/each}
-			{#if isExpense || typeCats.length > 4}
-				<button type="button" class="btn-fav-category btn-more" title="Otras categorías" aria-haspopup="dialog" onclick={() => picker.open()}>
-					<div class="fav-icon-box"><i class="ph-bold ph-plus" aria-hidden="true"></i></div>
-					<span class="fav-label">Más</span>
-				</button>
-			{/if}
-		</div>
+	<p class="qb-k qb-hint">Toca una categoría para guardar</p>
+	<div class="qb-cats">
+		{#each isExpense ? favorites : typeCats.slice(0, 4) as cat (cat.id)}
+			<button type="button" class="qb-cat" title={cat.name} onclick={() => save(cat.id)}>
+				<span class="qb-tile" style:--c={cat.color}><i class={icon(cat)} aria-hidden="true"></i></span>
+				<span class="qb-name">{cat.name}</span>
+			</button>
+		{/each}
+		{#if isExpense || typeCats.length > 4}
+			<button type="button" class="qb-cat" title="Otras categorías" aria-haspopup="dialog" onclick={() => picker.open()}>
+				<span class="qb-tile qb-more"><i class="ph-bold ph-dots-three" aria-hidden="true"></i></span>
+				<span class="qb-name">Más</span>
+			</button>
+		{/if}
 	</div>
 </div>
 
@@ -222,3 +204,76 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.qb { --tint: 244, 63, 94; --tone: var(--danger); display: grid; gap: 0.9rem; }
+	.qb.is-income { --tint: 16, 185, 129; --tone: var(--success); }
+
+	/* Segmentado de vidrio */
+	.qb-seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: color-mix(in srgb, var(--text-muted) 12%, transparent); }
+	.qb-thumb {
+		position: absolute; inset: 4px auto 4px 4px; width: calc(50% - 4px); border-radius: inherit;
+		background: var(--g-chip-hover, #fff); box-shadow: 0 4px 12px -6px rgb(15 23 42 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.9);
+		transition: translate 0.4s var(--g-spring, ease);
+	}
+	.is-income .qb-thumb { translate: 100% 0; }
+	.qb-seg button {
+		position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; min-height: 40px;
+		border: 0; background: none; font: inherit; font-size: var(--fs-md); font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 999px;
+		transition: color 0.25s ease;
+	}
+	.qb-seg button.on { color: var(--tone); }
+	.qb-seg button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+	/* Monto protagonista */
+	.qb-amount { display: flex; align-items: baseline; justify-content: center; gap: 0.35rem; margin-top: 0.25rem; cursor: text; }
+	.qb-sign { font-size: 1.5rem; font-weight: 700; color: var(--tone); opacity: 0.8; }
+	.qb-amount input {
+		min-width: 1ch; border: 0; padding: 0; background: none; outline: none; text-align: left;
+		font: inherit; font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-main); font-variant-numeric: tabular-nums;
+		field-sizing: content; max-width: 100%;
+	}
+	@supports not (field-sizing: content) { .qb-amount input { width: 7ch; } }
+	.qb-amount input::placeholder { color: color-mix(in srgb, var(--text-muted) 55%, transparent); }
+	.qb-title {
+		width: 100%; min-height: 46px; padding: 0 1rem; border-radius: 14px; text-align: center;
+		border: 1px solid color-mix(in srgb, var(--text-muted) 18%, transparent); background: color-mix(in srgb, var(--bg-card) 60%, transparent);
+		font: inherit; font-size: var(--fs-base); color: var(--text-main); outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	}
+	.qb-title:focus { border-color: color-mix(in srgb, var(--tone) 55%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone) 15%, transparent); }
+
+	/* Cuentas: fila desplazable sin barra visible */
+	.qb-wallets { display: flex; align-items: center; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; margin-inline: -0.25rem; padding: 0.15rem 0.25rem; }
+	.qb-wallets::-webkit-scrollbar { display: none; }
+	.qb-k { flex: none; font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); margin: 0; }
+	.qb-chip {
+		flex: none; display: inline-flex; align-items: center; gap: 0.35rem; min-height: 36px; padding: 0 0.8rem;
+		border-radius: 999px; border: 1px solid color-mix(in srgb, var(--text-muted) 18%, transparent); background: var(--g-chip, transparent);
+		font: inherit; font-size: var(--fs-sm); font-weight: 600; color: var(--text-secondary); cursor: pointer;
+		transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s var(--g-spring, ease);
+	}
+	.qb-chip:active { transform: scale(0.95); }
+	.qb-chip.on { color: var(--c); border-color: color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); }
+
+	/* Categorías: 5 columnas que caben siempre, nombre en dos líneas */
+	.qb-hint { text-align: center; margin-top: 0.1rem; }
+	.qb-cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.35rem; }
+	.qb-cat {
+		display: grid; justify-items: center; align-content: start; gap: 0.35rem; padding: 0.35rem 0.1rem; border: 0; border-radius: 16px;
+		background: none; font: inherit; cursor: pointer; transition: background-color 0.2s ease;
+	}
+	.qb-cat:hover { background: var(--bg-hover); }
+	.qb-cat:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+	.qb-tile {
+		display: grid; place-items: center; width: 52px; height: 52px; border-radius: 17px; font-size: 1.45rem;
+		color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6); transition: transform 0.25s var(--g-spring, ease);
+	}
+	.qb-cat:active .qb-tile { transform: scale(0.9); }
+	.qb-more { --c: var(--text-secondary); background: var(--g-chip, var(--bg-hover)); border: 1px dashed color-mix(in srgb, var(--text-muted) 35%, transparent); }
+	.qb-name {
+		max-width: 100%; font-size: var(--fs-xs); font-weight: 600; line-height: 1.2; color: var(--text-main); text-align: center;
+		display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; hyphens: auto;
+	}
+	@media (prefers-reduced-motion: reduce) { .qb-thumb, .qb-tile, .qb-chip { transition: none; } }
+</style>
