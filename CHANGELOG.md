@@ -7,6 +7,23 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [3.2.0] - 2026-11-23
+
+### Añadido
+
+- Manual de identidad de marca en docs/brand.
+- Botón oficial de Google en el acceso.
+
+### Cambiado
+
+- Colores alineados con la paleta y los contrastes del manual de marca.
+- Nueva pantalla de apertura en liquid glass.
+- Registro rápido rediseñado.
+
+### Seguridad
+
+- La URL y la clave de Supabase ya no llegan al navegador: se sirven detrás del dominio de LUKA con /sb.
+
 ## [3.1.0] - 2026-11-23
 
 ### Añadido
@@ -147,6 +164,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[3.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.4.0...v3.0.0
 [2.4.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.3.0...v2.4.0
