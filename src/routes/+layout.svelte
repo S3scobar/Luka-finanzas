@@ -11,12 +11,13 @@
 	import '#lib/styles/liquid.css';
 	import '#lib/styles/app.css';
 	import '#lib/styles/desktop.css';
+	import '#lib/styles/polish.css';
 
 	import { onMount, tick } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { session } from '#lib/session.svelte.js';
-	import { TABS } from '#lib/tabs.js';
+	import { TABS, PRIMARY_TABS } from '#lib/tabs.js';
 	import Splash from '#lib/ui/Splash.svelte';
 	import Footer from '#lib/ui/Footer.svelte';
 
@@ -89,6 +90,12 @@
 		Profile = (await import('#lib/ui/ProfileSheet.svelte')).default;
 	}
 	const startTour = async () => (await controller)?.startTour();
+
+	// En el celular: cuatro pestañas fijas abajo y el resto en «Más»
+	const moreTabs = TABS.filter((t) => !PRIMARY_TABS.includes(t.key));
+	const inMore = $derived(moreTabs.some((t) => t.path === page.url.pathname));
+	let moreSheet = $state();
+	afterNavigate(() => moreSheet?.close?.());
 </script>
 
 <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -129,6 +136,45 @@
 </main>
 
 <Footer />
+
+<!-- Barra de pestañas del celular (oculta en computador, donde manda la barra lateral) -->
+<nav class="tabbar" aria-label="Secciones principales" hidden={!loggedIn}>
+	{#each TABS.filter((t) => PRIMARY_TABS.includes(t.key)) as t (t.key)}
+		{@const active = page.url.pathname === t.path}
+		<a class="tabbar-item" class:active href={t.path} aria-current={active ? 'page' : undefined}>
+			<i class="{active ? 'ph-duotone' : 'ph-bold'} {t.icon}" aria-hidden="true"></i>
+			<span>{t.label}</span>
+		</a>
+	{/each}
+	<button type="button" class="tabbar-item" class:active={inMore} aria-haspopup="dialog" onclick={() => moreSheet?.showModal()}>
+		<i class="{inMore ? 'ph-duotone' : 'ph-bold'} ph-dots-three-circle" aria-hidden="true"></i>
+		<span>Más</span>
+	</button>
+</nav>
+
+<dialog bind:this={moreSheet} class="more-sheet" aria-label="Más secciones" closedby="any">
+	<div class="more-grip" aria-hidden="true"></div>
+	<ul role="list">
+		{#each moreTabs as t (t.key)}
+			{@const active = page.url.pathname === t.path}
+			<li>
+				<a href={t.path} class:active aria-current={active ? 'page' : undefined}>
+					<span class="more-icon"><i class="ph-duotone {t.icon}" aria-hidden="true"></i></span>
+					<span class="more-label">{t.label}</span>
+					<i class="ph-bold ph-caret-right more-caret" aria-hidden="true"></i>
+				</a>
+			</li>
+		{/each}
+		<li>
+			<button type="button" class="more-link" onclick={() => { moreSheet?.close(); startTour(); }}>
+				<span class="more-icon"><i class="ph-duotone ph-sparkle" aria-hidden="true"></i></span>
+				<span class="more-label">Ver la guía de LUKA</span>
+				<i class="ph-bold ph-caret-right more-caret" aria-hidden="true"></i>
+			</button>
+		</li>
+	</ul>
+	<form method="dialog"><button class="more-close">Cerrar</button></form>
+</dialog>
 
 <button id="btn-start-tutorial" class="tutorial-fab" type="button" title="Ver guía de LUKA" hidden={!loggedIn} onclick={startTour}>
 	<i class="ph-duotone ph-sparkle" aria-hidden="true"></i>
