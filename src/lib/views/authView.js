@@ -13,7 +13,7 @@ export const authView = {
       container.innerHTML = `
         <div class="auth-card">
           <div class="auth-header">
-            <i class="fa-solid fa-wallet auth-icon"></i>
+            <img class="auth-logo" src="/favicon.svg" alt="" width="72" height="72" />
             <h2>${isLoginMode ? "Iniciar Sesión" : "Crear Cuenta"}</h2>
             <p>${isLoginMode ? "Accede a tu gestor de gastos" : "Registra tus datos para empezar"}</p>
           </div>
