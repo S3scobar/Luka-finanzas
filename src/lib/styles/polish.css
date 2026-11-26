@@ -1,0 +1,506 @@
+/* polish.css — capa final de pulido. Se carga la última (routes/+layout.svelte).
+   Conserva la identidad (azul cobalto, esmeralda, vidrio) y ajusta lo que se nota al usarla:
+   movimiento con curvas propias, barra de pestañas abajo en el celular, un saldo protagonista,
+   listas planas sin tarjeta dentro de tarjeta y superficies del navegador con la paleta.
+   Lleva !important solo donde las capas anteriores (liquid.css, glass.css) ya lo usan. */
+
+:root {
+  /* Curvas de movimiento: salida rápida para respuestas, cajón tipo iOS para hojas */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --tabbar-h: 64px;
+  --hairline: color-mix(in srgb, var(--text-main) 8%, transparent);
+}
+
+/* ------------------------------------------------------------------
+   Superficies del navegador con la paleta de la marca
+   ------------------------------------------------------------------ */
+::selection { background: color-mix(in srgb, var(--primary) 24%, transparent); color: var(--text-main); }
+input, textarea { caret-color: var(--primary); }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+a { text-underline-offset: 0.18em; }
+
+/* Respuesta al toque: todo lo que se presiona se hunde un poco */
+.btn:active:not(:disabled),
+.btn-primary:active:not(:disabled),
+.btn-secondary:active:not(:disabled),
+.tabbar-item:active,
+.more-sheet a:active,
+.more-sheet .more-link:active {
+  transform: scale(0.97);
+}
+
+/* El hover que levanta solo existe con puntero fino (en el celular el toque lo dejaba pegado) */
+@media (hover: none) {
+  .transaction-item:hover, .wallet-item:hover, .budget-card:hover, .fund-card:hover,
+  .sub-card:hover, .category-manage-card:hover { transform: none !important; }
+}
+
+/* ------------------------------------------------------------------
+   Billeteras: el color del banco va en su icono, no como franja lateral
+   ------------------------------------------------------------------ */
+.wallet-item::before { display: none; }
+
+/* ------------------------------------------------------------------
+   Inicio (celular): un saldo protagonista y el mes en tres cifras
+   ------------------------------------------------------------------ */
+.balance-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 1.35rem 1.25rem 1.1rem;
+  margin-bottom: 1rem;
+  border-radius: 24px;
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(16, 185, 129, 0.28), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, rgba(59, 130, 246, 0.55), transparent 60%),
+    linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 55%, #0F172A 100%);
+  box-shadow: 0 18px 40px -18px rgba(30, 58, 138, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+:root[data-theme="dark"] .balance-hero {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(16, 185, 129, 0.22), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, rgba(37, 99, 235, 0.45), transparent 60%),
+    linear-gradient(160deg, #1E3A8A 0%, #172554 55%, #0B1220 100%);
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.balance-hero-label {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: rgba(219, 234, 254, 0.85);
+}
+.balance-hero-amount {
+  margin: 0.2rem 0 0.15rem;
+  font-size: clamp(2.25rem, 11vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: #fff;
+}
+.balance-hero-sym {
+  font-size: 0.55em;
+  font-weight: 700;
+  margin-inline-end: 0.2em;
+  vertical-align: 0.55em;
+  color: rgba(219, 234, 254, 0.8);
+}
+.balance-hero-sub {
+  display: block;
+  font-size: var(--fs-sm);
+  color: rgba(219, 234, 254, 0.72);
+}
+.balance-hero-sub::first-letter { text-transform: uppercase; }
+
+.balance-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 1.1rem 0 0;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.balance-hero-stats div { min-width: 0; }
+.balance-hero-stats dt {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: rgba(219, 234, 254, 0.75);
+}
+.balance-hero-stats dd {
+  margin: 0.15rem 0 0;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.balance-hero-stats dd.is-income { color: #6EE7B7; }
+.balance-hero-stats dd.is-expense { color: #FDA4AF; }
+
+/* Entrada única del saldo al abrir Inicio */
+@media (prefers-reduced-motion: no-preference) {
+  .balance-hero {
+    animation: hero-in 520ms var(--ease-out) both;
+  }
+  .balance-hero-amount {
+    animation: amount-in 600ms var(--ease-out) 80ms both;
+  }
+}
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+}
+@keyframes amount-in {
+  from { opacity: 0; filter: blur(6px); transform: translateY(4px); }
+}
+
+/* ------------------------------------------------------------------
+   Movimientos: una lista plana con filetes, no una tarjeta por fila
+   ------------------------------------------------------------------ */
+.history-section .section-header h3 { font-size: 1.15rem; }
+
+.transactions-list { gap: 0 !important; }
+.transactions-list .transaction-item {
+  gap: 0.8rem;
+  padding: 0.75rem 0.25rem;
+  min-height: 64px;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+}
+.transactions-list .transaction-item + .transaction-item { border-top: 1px solid var(--hairline) !important; }
+@media (hover: hover) and (pointer: fine) {
+  .transactions-list .transaction-item { border-radius: 12px; padding-inline: 0.5rem; transition: background-color 160ms ease; }
+  .transactions-list .transaction-item:hover { background: var(--hairline) !important; }
+  .transactions-list .transaction-item:hover + .transaction-item { border-top-color: transparent !important; }
+}
+
+.transactions-list .trans-cat-icon { width: 40px; height: 40px; font-size: 1.1rem; }
+.transactions-list .trans-title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.transactions-list .trans-meta {
+  gap: 0;
+  flex-wrap: nowrap;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.transactions-list .trans-meta .trans-wallet { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.transactions-list .trans-meta .trans-date { white-space: nowrap; }
+.transactions-list .trans-meta .trans-date::before { content: "·"; margin-inline: 0.35rem; }
+.transactions-list .trans-amount {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.transactions-list .btn-delete-trans {
+  width: 36px;
+  height: 36px;
+  margin-inline-end: -0.35rem;
+  border-radius: 10px;
+  opacity: 0.55;
+  transition: opacity 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.transactions-list .btn-delete-trans:hover,
+.transactions-list .btn-delete-trans:focus-visible { opacity: 1; color: var(--danger); background: var(--danger-soft); }
+@media (hover: hover) and (pointer: fine) {
+  .transactions-list .btn-delete-trans { opacity: 0; }
+  .transactions-list .transaction-item:hover .btn-delete-trans { opacity: 0.7; }
+}
+
+/* ------------------------------------------------------------------
+   Aviso del día (notificationCenter.js): en el celular el texto ocupa el ancho
+   y las acciones bajan a su propia fila
+   ------------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .luka-alert-banner {
+    display: grid !important;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "icon body" "actions actions";
+    align-items: start;
+    gap: 0.6rem 0.8rem;
+    padding: 0.9rem 1rem;
+  }
+  .luka-alert-banner .alert-banner-icon { grid-area: icon; width: 36px; height: 36px; font-size: 1.15rem; }
+  .luka-alert-banner .alert-banner-body { grid-area: body; }
+  .luka-alert-banner .alert-banner-actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-inline-start: calc(36px + 0.8rem);
+  }
+  .luka-alert-banner .btn-alert-action { min-height: 36px; }
+}
+
+/* ------------------------------------------------------------------
+   Celular y tableta (< 1100px): barra de pestañas abajo, cabecera limpia arriba
+   ------------------------------------------------------------------ */
+.tabbar, .more-sheet { display: none; }
+
+@media (max-width: 1099.98px) {
+  /* Las pestañas deslizables de arriba se reemplazan por la barra de abajo */
+  #nav-tabs { display: none !important; }
+
+  .navbar {
+    padding: max(0.6rem, env(safe-area-inset-top)) 1rem 0.6rem !important;
+    min-height: 56px;
+  }
+  .brand { font-size: 1.2rem !important; letter-spacing: -0.02em; }
+  .brand img { width: 26px; height: 26px; }
+
+  .tabbar:not([hidden]) {
+    position: fixed;
+    z-index: 1400;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(calc(100% - 20px), 520px);
+    height: var(--tabbar-h);
+    display: grid;
+    grid-template-columns: repeat(var(--tab-count, 5), 1fr);
+    align-items: stretch;
+    padding: 6px;
+    border-radius: 22px;
+    background: var(--liquid-bg);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    backdrop-filter: blur(20px) saturate(170%);
+    border: 1px solid var(--liquid-border-outer);
+    box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.35), var(--liquid-shine);
+  }
+  :root[data-theme="dark"] .tabbar:not([hidden]) {
+    background: rgba(15, 23, 38, 0.82);
+    box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.7), var(--liquid-shine);
+  }
+
+  .tabbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    border: 0;
+    border-radius: 16px;
+    background: none;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 160ms ease, background-color 200ms var(--ease-out), transform 120ms var(--ease-out);
+  }
+  .tabbar-item i { font-size: 1.4rem; line-height: 1; }
+  .tabbar-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .tabbar-item.active {
+    color: var(--primary-text);
+    background: var(--primary-soft);
+  }
+  :root[data-theme="dark"] .tabbar-item.active { color: #BFDBFE; background: rgba(59, 130, 246, 0.2); }
+
+  /* El contenido y el pie no quedan bajo la barra */
+  :root:has(.tabbar:not([hidden])) .app-footer {
+    padding-bottom: calc(var(--tabbar-h) + 2.25rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* La guía vive en «Más»: el botón flotante tapaba el contenido */
+  .tutorial-fab { display: none !important; }
+
+  /* Hoja «Más»: sube desde abajo con la curva de cajón */
+  .more-sheet[open] {
+    display: block;
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0 auto;
+    width: min(100%, 560px);
+    max-height: 85dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    border: 1px solid var(--liquid-border-outer);
+    border-bottom: 0;
+    border-radius: 24px 24px 0 0;
+    background: var(--bg-card);
+    color: var(--text-main);
+    box-shadow: 0 -20px 50px -20px rgba(15, 23, 42, 0.4);
+    transition: transform 380ms var(--ease-drawer), overlay 380ms allow-discrete, display 380ms allow-discrete;
+  }
+  @starting-style {
+    .more-sheet[open] { transform: translateY(100%); }
+  }
+  .more-sheet::backdrop {
+    background: rgba(2, 6, 23, 0.45);
+    transition: background-color 300ms ease, overlay 300ms allow-discrete, display 300ms allow-discrete;
+  }
+  @starting-style {
+    .more-sheet[open]::backdrop { background: rgba(2, 6, 23, 0); }
+  }
+
+  .more-grip {
+    width: 36px;
+    height: 4px;
+    margin: 0.25rem auto 0.75rem;
+    border-radius: 999px;
+    background: var(--border-strong);
+  }
+  .more-sheet ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+  .more-sheet a, .more-sheet .more-link {
+    width: 100%;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: start;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 56px;
+    padding: 0 0.85rem;
+    border-radius: 14px;
+    color: var(--text-main);
+    font-size: var(--fs-base);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 160ms ease, transform 120ms var(--ease-out);
+  }
+  .more-sheet .more-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    color: var(--primary-text);
+    background: var(--primary-soft);
+  }
+  .more-sheet .more-label { flex: 1; }
+  .more-sheet .more-caret { color: var(--text-faint); font-size: 0.9rem; }
+  .more-sheet a.active { background: var(--primary-soft); color: var(--primary-text); }
+  .more-sheet form { margin-top: 0.5rem; }
+
+  /* Elegir atajos */
+  .more-head { padding: 0 0.35rem 0.6rem; }
+  .more-head h2 { font-size: 1.15rem; margin: 0 0 0.2rem; }
+  .more-head p { margin: 0; font-size: var(--fs-sm); color: var(--text-muted); }
+  .more-sheet .pick-mark {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-strong);
+    color: #fff;
+    font-size: 0.85rem;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms var(--ease-out);
+  }
+  .more-sheet .pick.on .pick-mark { background: var(--primary); border-color: var(--primary); }
+  .more-sheet .pick.on .more-label { color: var(--text-main); }
+  .more-sheet .pick[aria-disabled="true"]:not(.on) { opacity: 0.45; }
+  .pick-count { margin: 0.5rem 0.35rem 0; font-size: var(--fs-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .more-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem; }
+  .more-close:disabled { opacity: 0.45; cursor: default; }
+  .more-close.is-primary { background: var(--primary); color: #fff; }
+  .more-close {
+    width: 100%;
+    min-height: 48px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--bg-muted);
+    color: var(--text-main);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Movimiento reducido: todo queda quieto y visible
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .balance-hero, .balance-hero-amount { animation: none; }
+  .more-sheet[open], .more-sheet::backdrop { transition: none; }
+  .btn:active, .tabbar-item:active, .more-sheet a:active,
+.more-sheet .more-link:active { transform: none; }
+}
+
+/* ------------------------------------------------------------------
+   Avisos de pago en Inicio (celular): filas compactas, título en frase, no en versalitas
+   ------------------------------------------------------------------ */
+.dashboard-banners-stack { gap: 0.6rem !important; margin-bottom: 1rem; }
+.card-statement-banner { padding: 0.85rem 1rem !important; gap: 0.75rem; }
+.card-statement-banner .banner-statement-icon { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; }
+.card-statement-banner .banner-statement-title {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: var(--fs-sm) !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.3;
+}
+.card-statement-banner .banner-statement-amount {
+  font-size: 1.25rem !important;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.card-statement-banner .banner-statement-sub { font-size: var(--fs-xs) !important; }
+/* Al día: el «$ 0» no informa nada; queda el título y la confirmación */
+.card-statement-banner.banner-paid .banner-statement-amount { display: none; }
+.card-statement-banner.banner-paid .banner-statement-title { color: var(--text-main) !important; font-size: var(--fs-md) !important; }
+.card-statement-banner .btn { flex-shrink: 0; min-height: 40px; }
+
+/* ------------------------------------------------------------------
+   Billeteras (celular): lista plana con filetes, como los movimientos
+   ------------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .wallets-grid { display: block !important; }
+  .wallets-grid .wallet-item {
+    padding: 0.8rem 0.25rem !important;
+    min-height: 68px;
+    background: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .wallets-grid .wallet-item + .wallet-item { border-top: 1px solid var(--hairline) !important; }
+  .wallets-grid .wallet-balance { font-size: 1.15rem; letter-spacing: -0.02em; }
+  .wallets-grid .wallet-actions button { width: 40px; height: 40px; }
+}
+
+/* Billeteras: el total es la cifra principal de la pantalla */
+.wallets-total-value { font-size: 1.75rem !important; letter-spacing: -0.03em; line-height: 1.15; }
+
+/* Computador: la guía queda como un botón redondo discreto en la esquina, sin tapar tarjetas */
+@media (min-width: 1100px) {
+  .tutorial-fab:not([hidden]) {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1rem !important;
+    padding: 0 !important;
+    justify-content: center;
+    right: auto !important;
+    left: 44px !important;
+    bottom: 30px !important;
+    z-index: 1100;
+  }
+  .tutorial-fab span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Acceso: la marca recibe a la persona (antes un icono genérico de billetera) */
+.auth-logo {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1rem;
+  filter: drop-shadow(0 12px 24px rgba(37, 99, 235, 0.35));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .auth-logo { animation: hero-in 520ms var(--ease-out) both; }
+}

@@ -89,6 +89,14 @@
 
 	const visible = $derived(showAll ? d.transactions : d.transactions.slice(0, 5));
 
+	// "$ 3.178.100" → símbolo aparte para dibujarlo más pequeño que la cifra
+	const splitMoney = (txt) => {
+		const m = String(txt).match(/^(-?\s*[^\d\s-]+\s?)(.*)$/);
+		return m ? { sym: m[1].trim(), num: m[2] } : { sym: '', num: txt };
+	};
+	const total = $derived(totals ? splitMoney(formatMoney(totals.balance, d.base)) : null);
+	const monthName = new Date().toLocaleDateString('es-CO', { month: 'long' });
+
 	const pay = (section) => goto(section === 'loans' ? '/credito#prestamos' : '/credito');
 
 	async function remove(t) {
@@ -115,24 +123,26 @@
 		{@html skeletonHtml()}
 	{:else}
 		<div class="dashboard-module">
-			<div class="summary-cards-grid">
-				<div class="metric-card card-total">
-					<span class="metric-label"><i class="ph-bold ph-wallet" aria-hidden="true"></i> Saldo Total</span>
-					<span class="metric-value text-primary">{formatMoney(totals.balance, d.base)}</span>
-				</div>
-				<div class="metric-card card-income">
-					<span class="metric-label"><i class="ph-bold ph-arrow-down-left text-success" aria-hidden="true"></i> Ingresos</span>
-					<span class="metric-value text-success">{formatMoney(totals.income, d.base)}</span>
-				</div>
-				<div class="metric-card card-expense">
-					<span class="metric-label"><i class="ph-bold ph-arrow-up-right text-danger" aria-hidden="true"></i> Gastos</span>
-					<span class="metric-value text-danger">{formatMoney(totals.expense, d.base)}</span>
-				</div>
-				<div class="metric-card card-balance">
-					<span class="metric-label"><i class="ph-duotone ph-scales" aria-hidden="true"></i> Balance</span>
-					<span class="metric-value {totals.net < 0 ? 'text-danger' : 'text-balance'}">{formatMoney(totals.net, d.base)}</span>
-				</div>
-			</div>
+			<!-- Un solo saldo protagonista; el mes va debajo como tres cifras compactas -->
+			<section class="balance-hero" aria-label="Resumen del mes">
+				<span class="balance-hero-label">Saldo total</span>
+				<p class="balance-hero-amount"><span class="balance-hero-sym">{total.sym}</span>{total.num}</p>
+				<span class="balance-hero-sub">En {d.wallets.length - d.creditCards.length} {d.wallets.length - d.creditCards.length === 1 ? 'cuenta' : 'cuentas'} · {monthName}</span>
+				<dl class="balance-hero-stats">
+					<div>
+						<dt><i class="ph-bold ph-arrow-down-left" aria-hidden="true"></i> Ingresos</dt>
+						<dd class="is-income">{formatMoney(totals.income, d.base)}</dd>
+					</div>
+					<div>
+						<dt><i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i> Gastos</dt>
+						<dd class="is-expense">{formatMoney(totals.expense, d.base)}</dd>
+					</div>
+					<div>
+						<dt><i class="ph-bold ph-scales" aria-hidden="true"></i> Balance</dt>
+						<dd class={totals.net < 0 ? 'is-expense' : ''}>{formatMoney(totals.net, d.base)}</dd>
+					</div>
+				</dl>
+			</section>
 
 			{#if banners.length}
 				<div class="dashboard-banners-stack">
@@ -161,7 +171,7 @@
 			<section class="section-card history-section" aria-labelledby="hist-title">
 				<div class="section-header">
 					<div>
-						<h3 id="hist-title"><i class="ph-duotone ph-clock-counter-clockwise" aria-hidden="true"></i> Movimientos Recientes</h3>
+						<h3 id="hist-title">Movimientos recientes</h3>
 						<p>Tus últimos registros de este mes</p>
 					</div>
 					<span class="badge-count">{d.transactions.length} en total</span>
@@ -185,12 +195,12 @@
 								<div class="trans-info">
 									<span class="trans-title">{t.title}</span>
 									<div class="trans-meta">
-										<span class="trans-wallet"><i class="ph-duotone ph-wallet" aria-hidden="true"></i> {t.wallet?.name || 'Cuenta'}</span>
+										<span class="trans-wallet">{t.wallet?.name || 'Cuenta'}</span>
 										<span class="trans-date">{formatShortDate(t.transaction_date)}</span>
 									</div>
 								</div>
 								<div class="trans-amount {expense ? 'amount-expense' : 'amount-income'}">
-									{expense ? '-' : '+'} {formatMoney(t.amount, t.wallet?.currency)}
+									{expense ? '−' : '+'}{formatMoney(t.amount, t.wallet?.currency)}
 								</div>
 								<button type="button" class="btn-delete-trans" aria-label="Eliminar {t.title}" title="Eliminar movimiento" onclick={() => remove(t)}>
 									<i class="ph-bold ph-trash" aria-hidden="true"></i>

@@ -217,8 +217,8 @@
 		</header>
 
 		<!-- Indicadores -->
-		{#each p.kpis as k (k.label)}
-			<article class="dcard kpi tone-{k.tone}">
+		{#each p.kpis as k, i (k.label)}
+			<article class="dcard kpi tone-{k.tone}" class:kpi-lead={i === 0}>
 				<div class="kpi-top">
 					<span class="tile"><i class="ph-bold {k.icon}" aria-hidden="true"></i></span>
 					<h2 class="eyebrow">{k.label}</h2>
@@ -528,6 +528,26 @@
 	.spark { display: block; width: 100%; height: 40px; margin-top: 0.75rem; overflow: visible; }
 	.spark-line { fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 	.spark-area { fill: color-mix(in srgb, var(--c) 14%, transparent); }
+
+	/* El saldo total abre la fila con la misma tarjeta de marca que en el celular (polish.css: .balance-hero) */
+	.kpi.kpi-lead {
+		color: #fff;
+		border-color: rgba(255, 255, 255, 0.14);
+		background:
+			radial-gradient(120% 90% at 100% 0%, rgba(16, 185, 129, 0.28), transparent 55%),
+			radial-gradient(90% 80% at 0% 100%, rgba(59, 130, 246, 0.55), transparent 60%),
+			linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 55%, #0F172A 100%);
+		box-shadow: 0 18px 40px -20px rgba(30, 58, 138, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+	}
+	:global(:root[data-theme='dark']) .kpi.kpi-lead {
+		background:
+			radial-gradient(120% 90% at 100% 0%, rgba(16, 185, 129, 0.22), transparent 55%),
+			radial-gradient(90% 80% at 0% 100%, rgba(37, 99, 235, 0.45), transparent 60%),
+			linear-gradient(160deg, #1E3A8A 0%, #172554 55%, #0B1220 100%);
+	}
+	.kpi-lead .tile { color: #fff; background: rgba(255, 255, 255, 0.14); }
+	.kpi-lead .eyebrow, .kpi-lead .kpi-foot .muted { color: rgba(219, 234, 254, 0.8); }
+	.kpi-lead .kpi-value { color: #fff; font-size: 2rem; letter-spacing: -0.03em; }
 	.pill { display: inline-flex; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 	.is-good { background: var(--success-soft); color: var(--success-text); }
 	.is-bad { background: var(--danger-soft); color: var(--danger-text); }

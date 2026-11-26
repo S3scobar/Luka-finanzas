@@ -7,6 +7,16 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [3.3.0] - 2026-11-25
+
+### Añadido
+
+- Atajos de la barra de abajo elegidos por cada persona.
+
+### Cambiado
+
+- Pulido de la interfaz en móvil y escritorio con la identidad actual.
+
 ## [3.2.0] - 2026-11-23
 
 ### Añadido
@@ -164,6 +174,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[3.3.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/S3scobar/luka-finanzas/compare/v2.4.0...v3.0.0
