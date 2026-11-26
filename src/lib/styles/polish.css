@@ -255,7 +255,7 @@ a { text-underline-offset: 0.18em; }
     width: min(calc(100% - 20px), 520px);
     height: var(--tabbar-h);
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(var(--tab-count, 5), 1fr);
     align-items: stretch;
     padding: 6px;
     border-radius: 22px;
@@ -312,7 +312,9 @@ a { text-underline-offset: 0.18em; }
     inset: auto 0 0 0;
     margin: 0 auto;
     width: min(100%, 560px);
-    max-height: 80dvh;
+    max-height: 85dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom));
     border: 1px solid var(--liquid-border-outer);
     border-bottom: 0;
@@ -374,6 +376,29 @@ a { text-underline-offset: 0.18em; }
   .more-sheet .more-caret { color: var(--text-faint); font-size: 0.9rem; }
   .more-sheet a.active { background: var(--primary-soft); color: var(--primary-text); }
   .more-sheet form { margin-top: 0.5rem; }
+
+  /* Elegir atajos */
+  .more-head { padding: 0 0.35rem 0.6rem; }
+  .more-head h2 { font-size: 1.15rem; margin: 0 0 0.2rem; }
+  .more-head p { margin: 0; font-size: var(--fs-sm); color: var(--text-muted); }
+  .more-sheet .pick-mark {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-strong);
+    color: #fff;
+    font-size: 0.85rem;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms var(--ease-out);
+  }
+  .more-sheet .pick.on .pick-mark { background: var(--primary); border-color: var(--primary); }
+  .more-sheet .pick.on .more-label { color: var(--text-main); }
+  .more-sheet .pick[aria-disabled="true"]:not(.on) { opacity: 0.45; }
+  .pick-count { margin: 0.5rem 0.35rem 0; font-size: var(--fs-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .more-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem; }
+  .more-close:disabled { opacity: 0.45; cursor: default; }
+  .more-close.is-primary { background: var(--primary); color: #fff; }
   .more-close {
     width: 100%;
     min-height: 48px;
