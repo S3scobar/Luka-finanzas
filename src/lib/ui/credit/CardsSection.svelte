@@ -21,13 +21,14 @@
 
 	async function load() {
 		try {
+			const debt = await categoryService.debtCategory('card'); // antes de listar, para que ya aparezca
 			const [cards, wallets, categories, monthTx] = await Promise.all([
 				creditCardService.getCreditCards(),
 				walletService.getWallets(),
 				categoryService.getCategories('expense'),
 				transactionService.getTransactions()
 			]);
-			base = { cards: cards || [], wallets: wallets || [], categories: categories || [], monthTx: monthTx || [] };
+			base = { cards: cards || [], wallets: wallets || [], categories: categories || [], monthTx: monthTx || [], debtId: debt.id };
 			if (!base.cards.some((c) => c.id === selectedId)) selectedId = base.cards[0]?.id ?? null;
 			await loadPurchases();
 		} catch (err) {
@@ -81,7 +82,7 @@
 		open(cardSheet, c
 			? { ...c, limitText: Number(c.credit_limit).toLocaleString('es-CO'), feeText: Number(c.management_fee || 0).toLocaleString('es-CO') }
 			: { name: '', limitText: '', interest_rate_ea: 25, cutoff_day: '', payment_due_day: '', feeText: '0', color: '#8B5CF6' });
-	const openPay = () => open(paySheet, { amountText: (due || st.totalDebt).toLocaleString('es-CO'), from: debit[0]?.id });
+	const openPay = () => open(paySheet, { amountText: (due || st.totalDebt).toLocaleString('es-CO'), from: debit[0]?.id, category: base.debtId });
 	const openAdv = () => open(advSheet, { title: '', amountText: '', installments: 12, category_id: base.categories[0]?.id, target: debit[0]?.id, feeText: '6.800' });
 
 	// Simulación del avance: primera cuota = capital + interés del mes (tasa E.A. a mensual)
@@ -120,7 +121,7 @@
 			};
 			return f.id ? creditCardService.updateCreditCard(f.id, data) : creditCardService.createCreditCard(data);
 		});
-	const pay = (e) => submit(e, paySheet, () => creditCardService.payCard({ card_id: card.id, payment_amount: parseCurrencyInput(f.amountText), from_wallet_id: f.from }));
+	const pay = (e) => submit(e, paySheet, () => creditCardService.payCard({ card_id: card.id, payment_amount: parseCurrencyInput(f.amountText), from_wallet_id: f.from, category_id: f.category }));
 	const advance = (e) =>
 		submit(e, advSheet, () =>
 			creditCardService.addPurchase({
@@ -303,6 +304,12 @@
 			<label for="pay-from">Sale de</label>
 			<select id="pay-from" bind:value={f.from} required>
 				{#each debit as w (w.id)}<option value={w.id}>{w.name} ({formatMoney(w.balance, w.currency)})</option>{/each}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="pay-cat">Categoría</label>
+			<select id="pay-cat" bind:value={f.category} required>
+				{#each base.categories as c (c.id)}<option value={c.id}>{c.name}</option>{/each}
 			</select>
 		</div>
 		{#if formError}<div class="alert-error" role="alert">{formError}</div>{/if}

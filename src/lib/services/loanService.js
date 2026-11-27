@@ -107,7 +107,7 @@ export const loanService = {
   },
 
   // Registra el pago como gasto (el trigger descuenta la cuenta) y lo anota en el préstamo
-  async addPayment({ loan, amount, from_wallet_id, date = null }) {
+  async addPayment({ loan, amount, from_wallet_id, category_id = null, date = null }) {
     const userId = await requireUserId();
     const value = parseFloat(amount);
     if (isNaN(value) || value <= 0) throw new Error("Monto inválido");
@@ -117,10 +117,9 @@ export const loanService = {
       throw new Error(`El pago supera el saldo pendiente ($ ${summary.remaining.toLocaleString("es-CO")}).`);
     }
 
-    const categoryId = await categoryService.resolveCategoryId(userId, "expense");
     const transaction = await transactionService.addTransaction({
       wallet_id: from_wallet_id,
-      category_id: categoryId,
+      category_id: category_id || (await categoryService.debtCategory("loan")).id,
       type: "expense",
       title: `Pago préstamo: ${loan.name}`,
       amount: value,

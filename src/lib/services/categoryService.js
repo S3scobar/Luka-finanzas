@@ -1,6 +1,12 @@
 // js/services/categoryService.js
 import { supabase, requireUserId } from "../supabaseClient.js";
 
+// Mismos nombres que supabase/migrations/20261127_debt_categories.sql
+const DEBT_CATEGORIES = {
+  loan: { name: "Préstamos", icon: "fa-hand-holding-dollar", color: "#8B5CF6" },
+  card: { name: "Tarjetas",  icon: "fa-credit-card",         color: "#6366F1" }
+};
+
 export const categoryService = {
   // Obtener categorías
   async getCategories(type = null) {
@@ -119,6 +125,17 @@ export const categoryService = {
       .maybeSingle();
 
     return fallback ? fallback.id : null;
+  },
+
+  // Categoría por defecto de los pagos de deuda; se crea la primera vez para cuentas que no la tienen
+  async debtCategory(kind) {
+    const { name, icon, color } = DEBT_CATEGORIES[kind];
+    const userId = await requireUserId();
+    const { data: found } = await supabase
+      .from("categories").select("*")
+      .eq("user_id", userId).eq("type", "expense").ilike("name", name)
+      .limit(1).maybeSingle();
+    return found || this.createCategory({ name, icon, color });
   },
 
   // Eliminar categoría
