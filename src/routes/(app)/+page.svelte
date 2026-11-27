@@ -99,8 +99,33 @@
 
 	const pay = (section) => goto(section === 'loans' ? '/credito#prestamos' : '/credito');
 
+	// Un solo movimiento abierto a la vez: tocar fuera de una fila cierra las demás
+	function closeOthers(e) {
+		for (const row of e.currentTarget.querySelectorAll('.swipe-reveal'))
+			if (row.scrollLeft && !row.contains(e.target)) row.scrollTo({ left: 0, behavior: 'smooth' });
+	}
+
+	// La primera vez, el primer movimiento se asoma y vuelve, para que se note que se puede deslizar
+	const peeked = (() => {
+		try { return localStorage.getItem('luka_swipe_peek') === '1'; } catch { return true; }
+	})();
+	function peek(node, on) {
+		if (!on || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		try { localStorage.setItem('luka_swipe_peek', '1'); } catch {}
+		const timers = [];
+		timers.push(setTimeout(() => {
+			node.style.scrollSnapType = 'none'; // sin snap, para poder quedar a medio camino
+			node.scrollTo({ left: 64, behavior: 'smooth' });
+			timers.push(setTimeout(() => {
+				node.scrollTo({ left: 0, behavior: 'smooth' });
+				timers.push(setTimeout(() => (node.style.scrollSnapType = ''), 500));
+			}, 900));
+		}, 900));
+		return { destroy: () => timers.forEach(clearTimeout) };
+	}
+
 	async function remove(t) {
-		if (!confirm('¿Deseas eliminar este movimiento? Su valor volverá a tu cuenta.')) return;
+		// Sin confirm(): el botón rojo que aparece al deslizar ya es la confirmación
 		try {
 			await transactionService.deleteTransaction(t.id);
 			d.transactions = d.transactions.filter((x) => x.id !== t.id); // se va de la lista al instante
@@ -172,7 +197,7 @@
 				<div class="section-header">
 					<div>
 						<h3 id="hist-title">Movimientos recientes</h3>
-						<p>Tus últimos registros de este mes</p>
+						<p><i class="ph-bold ph-hand-swipe-left" aria-hidden="true"></i> Desliza a la izquierda para eliminar</p>
 					</div>
 					<span class="badge-count">{d.transactions.length} en total</span>
 				</div>
@@ -184,27 +209,34 @@
 						<small>Escribe un gasto arriba y presiona un icono para comenzar.</small>
 					</div>
 				{:else}
-					<ul class="transactions-list" role="list">
-						{#each visible as t (t.id)}
+					<ul class="transactions-list" role="list" onpointerdown={closeOthers}>
+						{#each visible as t, i (t.id)}
 							{@const expense = t.type === 'expense'}
 							{@const color = t.category?.color || '#94A3B8'}
-							<li class="transaction-item" transition:slide={{ duration: 220 }}>
-								<div class="trans-cat-icon" style:background-color={color + '20'} style:color>
-									<i class={resolveIconClass(t.category?.icon || (expense ? 'fa-tag' : 'fa-money-bill-wave'))} aria-hidden="true"></i>
-								</div>
-								<div class="trans-info">
-									<span class="trans-title">{t.title}</span>
-									<div class="trans-meta">
-										<span class="trans-wallet">{t.wallet?.name || 'Cuenta'}</span>
-										<span class="trans-date">{formatShortDate(t.transaction_date)}</span>
+							{@const kind = expense ? 'gasto' : 'ingreso'}
+							<!-- Deslizar a la izquierda muestra «Eliminar»; el botón existe siempre, así que Tab o un lector de pantalla también lo alcanzan -->
+							<li class="swipe-reveal" transition:slide={{ duration: 220 }} use:peek={i === 0 && !peeked} onfocusout={(e) => !e.currentTarget.contains(e.relatedTarget) && e.currentTarget.scrollTo({ left: 0 })}>
+								<div class="transaction-item swipe-content">
+									<div class="trans-cat-icon" style:background-color={color + '20'} style:color>
+										<i class={resolveIconClass(t.category?.icon || (expense ? 'fa-tag' : 'fa-money-bill-wave'))} aria-hidden="true"></i>
+									</div>
+									<div class="trans-info">
+										<span class="trans-title">{t.title}</span>
+										<div class="trans-meta">
+											<span class="trans-wallet">{t.wallet?.name || 'Cuenta'}</span>
+											<span class="trans-date">{formatShortDate(t.transaction_date)}</span>
+										</div>
+									</div>
+									<div class="trans-amount {expense ? 'amount-expense' : 'amount-income'}">
+										{expense ? '−' : '+'}{formatMoney(t.amount, t.wallet?.currency)}
 									</div>
 								</div>
-								<div class="trans-amount {expense ? 'amount-expense' : 'amount-income'}">
-									{expense ? '−' : '+'}{formatMoney(t.amount, t.wallet?.currency)}
+								<div class="swipe-panel">
+									<button type="button" class="swipe-delete" aria-label="Eliminar {kind}: {t.title}" onclick={() => remove(t)}>
+										<i class="ph-bold ph-trash" aria-hidden="true"></i>
+										<span>Eliminar {kind}</span>
+									</button>
 								</div>
-								<button type="button" class="btn-delete-trans" aria-label="Eliminar {t.title}" title="Eliminar movimiento" onclick={() => remove(t)}>
-									<i class="ph-bold ph-trash" aria-hidden="true"></i>
-								</button>
 							</li>
 						{/each}
 					</ul>

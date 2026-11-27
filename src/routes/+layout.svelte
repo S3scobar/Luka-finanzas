@@ -18,7 +18,7 @@
 	import { page } from '$app/state';
 	import { session } from '#lib/session.svelte.js';
 	import { TABS } from '#lib/tabs.js';
-	import { shortcuts, loadShortcuts, saveShortcuts, MAX_SHORTCUTS, DEFAULT_SHORTCUTS } from '#lib/shortcuts.svelte.js';
+	import { shortcuts, loadShortcuts } from '#lib/shortcuts.svelte.js';
 	import Splash from '#lib/ui/Splash.svelte';
 	import Footer from '#lib/ui/Footer.svelte';
 
@@ -100,26 +100,7 @@
 	const moreTabs = $derived(TABS.filter((t) => !shortcuts.keys.includes(t.key)));
 	const inMore = $derived(moreTabs.some((t) => t.path === page.url.pathname));
 	let moreSheet = $state();
-	let editing = $state(false);
-	let draft = $state([]);
 	afterNavigate(() => moreSheet?.close?.());
-
-	function startEdit() {
-		draft = [...shortcuts.keys];
-		editing = true;
-	}
-	function toggleDraft(key) {
-		if (draft.includes(key)) {
-			if (draft.length > 1) draft = draft.filter((k) => k !== key);
-		} else if (draft.length < MAX_SHORTCUTS) {
-			draft = [...draft, key];
-		}
-	}
-	function saveEdit() {
-		saveShortcuts(session.userId, draft);
-		editing = false;
-	}
-	const isDefault = $derived(draft.length === DEFAULT_SHORTCUTS.length && DEFAULT_SHORTCUTS.every((k) => draft.includes(k)));
 </script>
 
 <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -153,7 +134,7 @@
 	</div>
 </header>
 
-{#if Profile && loggedIn}<Profile bind:this={profile} onlogout={logout} />{/if}
+{#if Profile && loggedIn}<Profile bind:this={profile} onlogout={logout} ontour={startTour} />{/if}
 
 <main id="main" class="container" tabindex="-1">
 	{@render children()}
@@ -176,62 +157,21 @@
 	</button>
 </nav>
 
-<dialog bind:this={moreSheet} class="more-sheet" aria-label={editing ? 'Elegir atajos' : 'Más secciones'} closedby="any" onclose={() => (editing = false)}>
+<dialog bind:this={moreSheet} class="more-sheet" aria-label="Más secciones" closedby="any">
 	<div class="more-grip" aria-hidden="true"></div>
-	{#if editing}
-		<div class="more-head">
-			<h2>Tus atajos</h2>
-			<p id="shortcuts-hint">Elige hasta {MAX_SHORTCUTS} para la barra de abajo. El resto queda en «Más».</p>
-		</div>
-		<ul role="list" aria-describedby="shortcuts-hint">
-			{#each TABS as t (t.key)}
-				{@const on = draft.includes(t.key)}
-				{@const blocked = !on && draft.length >= MAX_SHORTCUTS}
-				<li>
-					<button type="button" class="more-link pick" class:on aria-pressed={on} aria-disabled={blocked || (on && draft.length === 1)} onclick={() => toggleDraft(t.key)}>
-						<span class="more-icon"><i class="ph-duotone {t.icon}" aria-hidden="true"></i></span>
-						<span class="more-label">{t.label}</span>
-						<span class="pick-mark" aria-hidden="true">{#if on}<i class="ph-bold ph-check"></i>{/if}</span>
-					</button>
-				</li>
-			{/each}
-		</ul>
-		<p class="pick-count" aria-live="polite">
-			{draft.length} de {MAX_SHORTCUTS}{draft.length >= MAX_SHORTCUTS ? ' · quita uno para cambiarlo' : ''}
-		</p>
-		<div class="more-actions">
-			<button type="button" class="more-close" disabled={isDefault} onclick={() => (draft = [...DEFAULT_SHORTCUTS])}>Restablecer</button>
-			<button type="button" class="more-close is-primary" onclick={saveEdit}>Guardar</button>
-		</div>
-	{:else}
-		<ul role="list">
-			{#each moreTabs as t (t.key)}
-				{@const active = page.url.pathname === t.path}
-				<li>
-					<a href={t.path} class:active aria-current={active ? 'page' : undefined}>
-						<span class="more-icon"><i class="ph-duotone {t.icon}" aria-hidden="true"></i></span>
-						<span class="more-label">{t.label}</span>
-						<i class="ph-bold ph-caret-right more-caret" aria-hidden="true"></i>
-					</a>
-				</li>
-			{/each}
+	<ul role="list">
+		{#each moreTabs as t (t.key)}
+			{@const active = page.url.pathname === t.path}
 			<li>
-				<button type="button" class="more-link" onclick={startEdit}>
-					<span class="more-icon"><i class="ph-duotone ph-squares-four" aria-hidden="true"></i></span>
-					<span class="more-label">Elegir atajos</span>
+				<a href={t.path} class:active aria-current={active ? 'page' : undefined}>
+					<span class="more-icon"><i class="ph-duotone {t.icon}" aria-hidden="true"></i></span>
+					<span class="more-label">{t.label}</span>
 					<i class="ph-bold ph-caret-right more-caret" aria-hidden="true"></i>
-				</button>
+				</a>
 			</li>
-			<li>
-				<button type="button" class="more-link" onclick={() => { moreSheet?.close(); startTour(); }}>
-					<span class="more-icon"><i class="ph-duotone ph-sparkle" aria-hidden="true"></i></span>
-					<span class="more-label">Ver la guía de LUKA</span>
-					<i class="ph-bold ph-caret-right more-caret" aria-hidden="true"></i>
-				</button>
-			</li>
-		</ul>
-		<form method="dialog"><button class="more-close">Cerrar</button></form>
-	{/if}
+		{/each}
+	</ul>
+	<form method="dialog"><button class="more-close">Cerrar</button></form>
 </dialog>
 
 <button id="btn-start-tutorial" class="tutorial-fab" type="button" title="Ver guía de LUKA" hidden={!loggedIn} onclick={startTour}>

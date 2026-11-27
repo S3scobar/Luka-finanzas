@@ -339,6 +339,10 @@ button.budget-card .budget-meta { min-width: 0; }
   transition: transform 0.2s var(--g-spring, ease);
 }
 .chip-btn:active { transform: scale(0.95); }
+.shortcut-picks { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+.shortcut-pick { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text-secondary); background: none; border-color: var(--border-strong); }
+.shortcut-pick.on { color: #fff; background: var(--primary); border-color: var(--primary); }
+.shortcut-pick[aria-disabled="true"]:not(.on) { opacity: 0.45; }
 .sheet-danger {
   display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%;
   min-height: 44px; margin-top: 0.5rem; color: var(--danger); font-size: var(--fs-md); font-weight: 600;
