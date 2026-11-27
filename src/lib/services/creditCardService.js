@@ -240,15 +240,14 @@ export const creditCardService = {
 
   // Pago de tarjeta: registra el gasto en la cuenta de débito (el trigger tr_transaction_balance
   // descuenta el saldo), libera cupo y avanza una cuota en cada compra pendiente
-  async payCard({ card_id, payment_amount, from_wallet_id }) {
-    const userId = await requireUserId();
+  async payCard({ card_id, payment_amount, from_wallet_id, category_id = null }) {
+    await requireUserId();
     const payVal = parseFloat(payment_amount);
     if (isNaN(payVal) || payVal <= 0) throw new Error("Monto inválido");
 
-    const [cardRes, purchasesRes, fallbackCategoryId] = await Promise.all([
+    const [cardRes, purchasesRes] = await Promise.all([
       supabase.from("credit_cards").select("id, name, wallet_id, credit_limit").eq("id", card_id).single(),
-      supabase.from("credit_card_purchases").select("id, installments, installments_paid").eq("card_id", card_id),
-      categoryService.resolveCategoryId(userId, "expense")
+      supabase.from("credit_card_purchases").select("id, installments, installments_paid").eq("card_id", card_id)
     ]);
 
     if (cardRes.error) throw cardRes.error;
@@ -259,7 +258,7 @@ export const creditCardService = {
     // Primero el gasto: si falla (cuenta inexistente, por ejemplo) todavía no se ha tocado nada más
     await transactionService.addTransaction({
       wallet_id: from_wallet_id,
-      category_id: fallbackCategoryId,
+      category_id: category_id || (await categoryService.debtCategory("card")).id,
       type: "expense",
       title: `Pago Tarjeta: ${card.name}`,
       amount: payVal

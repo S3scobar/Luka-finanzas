@@ -4,6 +4,7 @@
 	import { slide } from 'svelte/transition';
 	import { loanService, LENDER_TYPES, isMissingLoansTable } from '#lib/services/loanService.js';
 	import { walletService } from '#lib/services/walletService.js';
+	import { categoryService } from '#lib/services/categoryService.js';
 	import { formatMoney } from '#lib/services/currencyService.js';
 	import { parseCurrencyInput, formatMoneyInput } from '#lib/currencyFormatter.js';
 	import { resolveIconClass } from '#lib/icons.js';
@@ -19,8 +20,9 @@
 
 	async function load() {
 		try {
-			const [loans, wallets] = await Promise.all([loanService.getLoans(), walletService.getWallets()]);
-			d = { rows: (loans || []).map((loan) => ({ loan, s: loanService.calculateSummary(loan) })), wallets: wallets || [] };
+			const debt = await categoryService.debtCategory('loan'); // antes de listar, para que ya aparezca
+			const [loans, wallets, categories] = await Promise.all([loanService.getLoans(), walletService.getWallets(), categoryService.getCategories('expense')]);
+			d = { rows: (loans || []).map((loan) => ({ loan, s: loanService.calculateSummary(loan) })), wallets: wallets || [], categories: categories || [], debtId: debt.id };
 		} catch (err) {
 			if (isMissingLoansTable(err)) missing = true;
 			else error = err?.message || 'Error desconocido';
@@ -63,7 +65,7 @@
 		loanSheet.open();
 	}
 	function openPay(r) {
-		f = { loan: r.loan, s: r.s, amountText: Math.round(r.s.nextPaymentAmount || r.s.remaining).toLocaleString('es-CO'), from: d.wallets[0]?.id, date: today() };
+		f = { loan: r.loan, s: r.s, amountText: Math.round(r.s.nextPaymentAmount || r.s.remaining).toLocaleString('es-CO'), from: d.wallets[0]?.id, category: d.debtId, date: today() };
 		formError = '';
 		paySheet.open();
 	}
@@ -100,7 +102,7 @@
 			return f.id ? loanService.updateLoan(f.id, data) : loanService.createLoan({ ...data, receive_wallet_id: f.wallet || null });
 		});
 	const pay = (e) =>
-		submit(e, paySheet, () => loanService.addPayment({ loan: f.loan, amount: parseCurrencyInput(f.amountText), from_wallet_id: f.from, date: f.date }));
+		submit(e, paySheet, () => loanService.addPayment({ loan: f.loan, amount: parseCurrencyInput(f.amountText), from_wallet_id: f.from, category_id: f.category, date: f.date }));
 </script>
 
 {#if missing}
@@ -250,6 +252,10 @@
 		<div class="form-group">
 			<label for="lp-from">Sale de</label>
 			<select id="lp-from" bind:value={f.from} required>{#each d?.wallets ?? [] as w (w.id)}<option value={w.id}>{w.name} ({formatMoney(w.balance, w.currency)})</option>{/each}</select>
+		</div>
+		<div class="form-group">
+			<label for="lp-cat">Categoría</label>
+			<select id="lp-cat" bind:value={f.category} required>{#each d?.categories ?? [] as c (c.id)}<option value={c.id}>{c.name}</option>{/each}</select>
 		</div>
 		<div class="form-group"><label for="lp-date">Fecha</label><input id="lp-date" type="date" bind:value={f.date} max={today()} required /></div>
 		{#if formError}<div class="alert-error" role="alert">{formError}</div>{/if}

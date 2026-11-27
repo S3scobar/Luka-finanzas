@@ -303,6 +303,8 @@ begin
     (p_user_id, 'Educación', 'expense', 'fa-graduation-cap', '#10B981', false, 0),
     (p_user_id, 'Ahorro', 'expense', 'fa-piggy-bank', '#14B8A6', false, 0),
     (p_user_id, 'Gasto hormiga', 'expense', 'fa-cookie-bite', '#F97316', false, 0),
+    (p_user_id, 'Préstamos', 'expense', 'fa-hand-holding-dollar', '#8B5CF6', false, 0),
+    (p_user_id, 'Tarjetas', 'expense', 'fa-credit-card', '#6366F1', false, 0),
     (p_user_id, 'Salario', 'income', 'fa-briefcase', '#10B981', false, 0),
     (p_user_id, 'Inversiones', 'income', 'fa-chart-line', '#3B82F6', false, 0),
     (p_user_id, 'Otros Ingresos', 'income', 'fa-wallet', '#6366F1', false, 0);

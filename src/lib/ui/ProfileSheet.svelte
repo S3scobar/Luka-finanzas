@@ -6,9 +6,11 @@
 	import { biometricService } from '#lib/services/biometricService.js';
 	import { notificationService } from '#lib/services/notificationService.js';
 	import { session } from '#lib/session.svelte.js';
+	import { TABS } from '#lib/tabs.js';
+	import { shortcuts, saveShortcuts, MAX_SHORTCUTS, DEFAULT_SHORTCUTS } from '#lib/shortcuts.svelte.js';
 
-	/** @type {{ onlogout: () => void }} */
-	let { onlogout } = $props();
+	/** @type {{ onlogout: () => void, ontour: () => void }} */
+	let { onlogout, ontour } = $props();
 
 	let dialog;
 	let user = $state(null);
@@ -116,6 +118,17 @@
 			return 'Registro borrado.';
 		});
 
+	// Atajos de la barra de abajo (celular): se guardan al tocar; siempre queda al menos uno y hay un máximo
+	function toggleShortcut(key) {
+		const keys = shortcuts.keys;
+		if (keys.includes(key)) {
+			if (keys.length > 1) saveShortcuts(session.userId, keys.filter((k) => k !== key));
+		} else if (keys.length < MAX_SHORTCUTS) {
+			saveShortcuts(session.userId, [...keys, key]);
+		}
+	}
+	const shortcutsDefault = $derived(shortcuts.keys.length === DEFAULT_SHORTCUTS.length && DEFAULT_SHORTCUTS.every((k) => shortcuts.keys.includes(k)));
+
 	async function enableNotif() {
 		await notificationService.requestPushPermission();
 		notif = Notification.permission;
@@ -203,6 +216,30 @@
 			{:else}
 				<span class="profile-help">No disponibles en este navegador</span>
 			{/if}
+		</div>
+	</div>
+
+	<div class="profile-block">
+		<h2>Atajos de la barra de abajo</h2>
+		<p id="pf-shortcuts-help" class="profile-help">Elige hasta {MAX_SHORTCUTS} para el celular. El resto queda en «Más».</p>
+		<div class="shortcut-picks" role="group" aria-describedby="pf-shortcuts-help">
+			{#each TABS as t (t.key)}
+				{@const on = shortcuts.keys.includes(t.key)}
+				<button type="button" class="chip-btn shortcut-pick" class:on aria-pressed={on} aria-disabled={!on && shortcuts.keys.length >= MAX_SHORTCUTS} onclick={() => toggleShortcut(t.key)}>
+					<i class="ph-bold {t.icon}" aria-hidden="true"></i> {t.label}
+				</button>
+			{/each}
+		</div>
+		<p class="profile-help" aria-live="polite">
+			{shortcuts.keys.length} de {MAX_SHORTCUTS}{shortcuts.keys.length >= MAX_SHORTCUTS ? ' · quita uno para cambiarlo' : ''}
+			<button type="button" class="btn btn-secondary btn-sm" disabled={shortcutsDefault} onclick={() => saveShortcuts(session.userId, DEFAULT_SHORTCUTS)}>Restablecer</button>
+		</p>
+	</div>
+
+	<div class="profile-block profile-rows">
+		<div class="profile-row">
+			<span><i class="ph-duotone ph-sparkle" aria-hidden="true"></i> Guía de LUKA</span>
+			<button type="button" class="btn btn-sm btn-secondary" onclick={() => { dialog.close(); ontour(); }}>Ver guía</button>
 		</div>
 	</div>
 
