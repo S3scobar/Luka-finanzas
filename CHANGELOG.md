@@ -7,6 +7,12 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [3.4.1] - 2026-11-27
+
+### Corregido
+
+- La hoja de pago de tarjetas rompía la pestaña Crédito antes de cargar los datos.
+
 ## [3.4.0] - 2026-11-27
 
 ### Añadido
@@ -188,6 +194,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[3.4.1]: https://github.com/S3scobar/luka-finanzas/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.1.0...v3.2.0

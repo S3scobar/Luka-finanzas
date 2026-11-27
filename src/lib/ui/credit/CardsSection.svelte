@@ -309,7 +309,7 @@
 		<div class="form-group">
 			<label for="pay-cat">Categoría</label>
 			<select id="pay-cat" bind:value={f.category} required>
-				{#each base.categories as c (c.id)}<option value={c.id}>{c.name}</option>{/each}
+				{#each base?.categories ?? [] as c (c.id)}<option value={c.id}>{c.name}</option>{/each}
 			</select>
 		</div>
 		{#if formError}<div class="alert-error" role="alert">{formError}</div>{/if}
