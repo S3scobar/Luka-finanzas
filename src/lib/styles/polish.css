@@ -189,20 +189,34 @@ a { text-underline-offset: 0.18em; }
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.transactions-list .btn-delete-trans {
-  width: 36px;
-  height: 36px;
-  margin-inline-end: -0.35rem;
-  border-radius: 10px;
-  opacity: 0.55;
-  transition: opacity 160ms ease, background-color 160ms ease, color 160ms ease;
+/* Deslizar para eliminar: contenedor con scroll-snap horizontal; el botón rojo es la segunda columna */
+.transactions-list .swipe-reveal {
+  display: grid;
+  grid-template-columns: 100% max-content;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior: auto; /* navegadores sin "chain" siguen encadenando el scroll vertical */
+  overscroll-behavior: chain;
 }
-.transactions-list .btn-delete-trans:hover,
-.transactions-list .btn-delete-trans:focus-visible { opacity: 1; color: var(--danger); background: var(--danger-soft); }
-@media (hover: hover) and (pointer: fine) {
-  .transactions-list .btn-delete-trans { opacity: 0; }
-  .transactions-list .transaction-item:hover .btn-delete-trans { opacity: 0.7; }
+.transactions-list .swipe-reveal::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .transactions-list .swipe-reveal { scroll-behavior: smooth; }
 }
+.transactions-list .swipe-reveal + .swipe-reveal { border-top: 1px solid var(--hairline); }
+.transactions-list .swipe-content { min-width: 0; scroll-snap-align: start; }
+.transactions-list .swipe-panel { display: flex; scroll-snap-align: end; }
+.transactions-list .swipe-delete {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem;
+  width: 92px; padding: 0 0.5rem; border: 0; cursor: pointer;
+  font: inherit; font-size: var(--fs-xs); font-weight: 700; line-height: 1.15; text-align: center;
+  color: #fff; background: var(--danger);
+  transition: transform 160ms var(--ease-out), filter 160ms ease;
+}
+.transactions-list .swipe-delete i { font-size: 1.25rem; }
+.transactions-list .swipe-delete:active { transform: scale(0.97); }
+.transactions-list .swipe-delete:focus-visible { outline: 2px solid var(--text-main); outline-offset: -4px; }
+.history-section .section-header p i { vertical-align: -0.1em; }
 
 /* ------------------------------------------------------------------
    Aviso del día (notificationCenter.js): en el celular el texto ocupa el ancho
@@ -377,28 +391,7 @@ a { text-underline-offset: 0.18em; }
   .more-sheet a.active { background: var(--primary-soft); color: var(--primary-text); }
   .more-sheet form { margin-top: 0.5rem; }
 
-  /* Elegir atajos */
-  .more-head { padding: 0 0.35rem 0.6rem; }
-  .more-head h2 { font-size: 1.15rem; margin: 0 0 0.2rem; }
-  .more-head p { margin: 0; font-size: var(--fs-sm); color: var(--text-muted); }
-  .more-sheet .pick-mark {
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border-strong);
-    color: #fff;
-    font-size: 0.85rem;
-    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms var(--ease-out);
-  }
-  .more-sheet .pick.on .pick-mark { background: var(--primary); border-color: var(--primary); }
-  .more-sheet .pick.on .more-label { color: var(--text-main); }
-  .more-sheet .pick[aria-disabled="true"]:not(.on) { opacity: 0.45; }
-  .pick-count { margin: 0.5rem 0.35rem 0; font-size: var(--fs-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
-  .more-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem; }
   .more-close:disabled { opacity: 0.45; cursor: default; }
-  .more-close.is-primary { background: var(--primary); color: #fff; }
   .more-close {
     width: 100%;
     min-height: 48px;
