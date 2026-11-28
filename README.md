@@ -2,6 +2,8 @@
 
 Aplicación web de finanzas personales: registro de gastos e ingresos, cuentas, presupuestos por categoría, tarjetas de crédito, suscripciones y fondos de ahorro. Está hecha con SvelteKit, se prerenderiza como sitio estático, usa Supabase para la base de datos y la autenticación, se despliega en Vercel y se puede instalar como app (PWA).
 
+> **Código visible, no abierto.** Se puede leer y evaluar, pero no copiar ni reutilizar: ver [LICENSE](LICENSE).
+
 ---
 
 ## Vista previa
@@ -156,6 +158,10 @@ La pestaña **Crédito** tiene dos secciones, porque funcionan distinto.
 ## 5. Estructura del Directorio
 
 ```text
+├── CHANGELOG.md                    # Cambios por versión (Keep a Changelog)
+├── CONTRIBUTING.md                 # Ramas, commits y versiones
+├── LICENSE                         # Licencia de código visible
+├── docs/                           # Capturas, manual de identidad y nota sobre el historial
 ├── vite.config.js                  # SvelteKit, adaptador de Vercel y política de seguridad de contenido (CSP)
 ├── vercel.json                     # Cabeceras de seguridad (HSTS, frame-ancestors, Permissions-Policy…)
 ├── .env.example                    # Variables públicas de Supabase
@@ -219,8 +225,8 @@ Requiere Node 22.17 o superior.
 
 1. Clona el repositorio e instala dependencias:
    ```bash
-   git clone https://github.com/S3scobar/LUKA.git
-   cd LUKA
+   git clone https://github.com/S3scobar/luka-finanzas.git
+   cd luka-finanzas
    npm install
    ```
 2. Crea tu propio proyecto en [Supabase](https://supabase.com) y ejecuta `supabase/schema.sql` en el SQL Editor.
@@ -255,7 +261,7 @@ npm run build   # build completo con prerenderizado
 
 * **Clave pública:** la `anon key` es pública por diseño (va en el bundle); la protección depende de las políticas RLS. Ya no está en el repositorio: se configura como variable de entorno.
 * **Cabeceras y CSP:** `script-src 'self'` con hashes (sin scripts en línea ni CDNs), `connect-src` limitado a Supabase y a la API de tasas, `frame-ancestors 'none'`, HSTS y `Permissions-Policy`. `style-src` aún permite `'unsafe-inline'` porque las vistas heredadas usan atributos `style`; Trusted Types queda para cuando esas vistas dejen de usar `innerHTML`.
-* **Textos legales:** `/privacidad` (Ley 1581 de 2012) y `/terminos` (licencia MIT, copyright y marca), enlazados desde el pie de página.
+* **Textos legales:** `/privacidad` (Ley 1581 de 2012) y `/terminos` (licencia de código visible, copyright y marca), enlazados desde el pie de página.
 * **Fondos de ahorro:** aportes y retiros siguen leyendo y escribiendo `saving_goals.current_amount` en pasos separados; falta una función RPC como la de las billeteras.
 * **Compras con tarjeta:** registrar una compra implica varias llamadas (compra, cupo, transacción). Si una falla a mitad, los datos pueden quedar a medias. Lo ideal es una función SQL que haga todo en una transacción.
 * **Pagos de tarjeta y avances anteriores:** hasta esta versión `payCard()` y el avance de `addPurchase()` ajustaban el saldo a mano y además el trigger lo ajustaba al registrar la transacción, así que el movimiento se contaba dos veces. Ya no ocurre, pero los saldos de pagos y avances hechos antes pueden estar desviados: corrígelos con el lápiz de editar en Billeteras.
@@ -282,7 +288,47 @@ npm run build   # build completo con prerenderizado
 
 ---
 
+## 11. Ciclo de desarrollo y control de versiones
+
+El proyecto se construyó en iteraciones cortas, cada una con su versión, su etiqueta y su entrada en el [CHANGELOG](CHANGELOG.md).
+
+| Versión | Fecha | Iteración |
+|---|---|---|
+| 1.0.0 | 31 oct | Primera versión: billeteras, gastos, presupuestos, tarjetas, suscripciones, ahorros y análisis |
+| 1.1.0 | 1 nov | Base multiusuario y tutorial con Presupuesto |
+| 1.2.0 | 3 nov | Iconos, deslizador de ingreso y navegación por gestos |
+| 2.0.0 | 6 nov | Rediseño liquid glass, tema animado y pestaña Crédito con préstamos |
+| 2.1.0 | 14 nov | App instalable (PWA), pantalla de apertura y liquid glass v2 |
+| 2.2.0 | 15 nov | Google, Face ID, base de datos endurecida, CI y primeras pruebas |
+| 2.3.0 | 16 nov | Notificaciones y tema oscuro Tinta |
+| 2.4.0 | 21 nov | Conversor y moneda por billetera |
+| 3.0.0 | 23 nov | Migración a SvelteKit 3 |
+| 3.1.0 | 23 nov | Todas las vistas en Svelte, perfil y panel de escritorio |
+| 3.2.0 | 23 nov | Manual de marca, auditoría de color y Supabase detrás del dominio |
+| 3.3.0 | 25 nov | Pulido móvil y escritorio, atajos personalizados |
+| 3.4.0 | 27 nov | Borrar deslizando y categorías de deuda |
+| 3.4.1 | 27 nov | Hotfix: la hoja de pago de tarjetas rompía Crédito |
+| 3.4.2 | 27 nov | Licencia de código visible, flujo de trabajo y plantillas |
+
+**Flujo de ramas:** Git Flow con `main` (solo versiones etiquetadas), `develop`, `feature/*`, `bugfix/*`, `release/*` y `hotfix/*`, fusionadas con `--no-ff`. **Commits:** Conventional Commits atómicos. **Versiones:** SemVer, con la etiqueta como fuente de verdad. Todo está en [CONTRIBUTING.md](CONTRIBUTING.md); cómo se reconstruyó el historial, en [docs/HISTORIAL.md](docs/HISTORIAL.md).
+
+```bash
+git log --graph --oneline --decorate --first-parent develop
+git tag -n1
+```
+
+## 12. Marca
+
+El [manual de identidad](docs/brand/LUKA-Manual-de-Identidad.pdf) recoge el logotipo, la paleta, la tipografía, la forma y el material, los iconos y la voz de LUKA, y termina con una auditoría que se aplicó en la versión 3.2.0.
+
+---
+
 ## Autor
 
 Desarrollado por **Santiago Escobar**.
 
+---
+
+## 13. Licencia
+
+Código visible, todos los derechos reservados. Ver [LICENSE](LICENSE).
