@@ -59,15 +59,16 @@
 
 	<h2 id="propiedad">6. Propiedad intelectual y copyright</h2>
 	<p>
-		© {new Date().getFullYear()} {LEGAL.owner}. El código fuente de {LEGAL.app} se publica bajo la
-		<a href={LEGAL.license} rel="license noopener noreferrer" target="_blank">licencia MIT</a>: puedes usarlo,
-		copiarlo, modificarlo y distribuirlo conservando el aviso de copyright y de licencia.
+		© {new Date().getFullYear()} {LEGAL.owner}. Todos los derechos reservados. El código fuente de
+		{LEGAL.app} es de código visible: puedes leerlo y evaluarlo, pero no está permitido copiarlo,
+		modificarlo, distribuirlo ni usarlo en otro producto o servicio sin permiso por escrito. Consulta la
+		<a href={LEGAL.license} rel="license noopener noreferrer" target="_blank">licencia</a>.
 	</p>
 	<p>
-		La licencia MIT cubre el código, no la identidad de la app. El nombre {LEGAL.app}, el logotipo, los
-		iconos de la app y la pantalla de apertura son de {LEGAL.owner} y no pueden usarse para presentar otro
-		producto como si fuera {LEGAL.app} o estuviera respaldado por su autor. Los iconos Phosphor y Font Awesome se
-		usan bajo sus propias licencias abiertas.
+		El nombre {LEGAL.app}, el logotipo, los iconos de la app y la pantalla de apertura son de
+		{LEGAL.owner} y no pueden usarse para presentar otro producto como si fuera {LEGAL.app} o
+		estuviera respaldado por su autor. Los iconos Phosphor y Font Awesome se usan bajo sus propias
+		licencias abiertas.
 	</p>
 	<p>Los datos que registras son tuyos. {LEGAL.app} solo los usa para prestarte el servicio.</p>
 

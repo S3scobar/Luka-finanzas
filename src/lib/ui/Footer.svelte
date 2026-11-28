@@ -14,9 +14,9 @@
 	<nav class="footer-legal" aria-label="Información legal">
 		<a href="/privacidad" aria-current={page.url.pathname === '/privacidad' ? 'page' : undefined}>Privacidad</a>
 		<a href="/terminos" aria-current={page.url.pathname === '/terminos' ? 'page' : undefined}>Términos</a>
-		<a href={LEGAL.license} target="_blank" rel="license noopener noreferrer">Licencia MIT</a>
+		<a href={LEGAL.license} target="_blank" rel="license noopener noreferrer">Licencia</a>
 	</nav>
 
 	<p class="footer-author">© {year} <span>{LEGAL.owner}</span></p>
-	<p class="footer-note">Código abierto bajo licencia MIT. El nombre y el logotipo de {LEGAL.app} no se incluyen en la licencia.</p>
+	<p class="footer-note">Código visible, todos los derechos reservados. El nombre y el logotipo de {LEGAL.app} tampoco se incluyen en la licencia.</p>
 </footer>
