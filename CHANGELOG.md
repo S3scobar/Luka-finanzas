@@ -7,6 +7,18 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 > Las versiones anteriores a la 3.0.0 se numeraron después de ocurrir, al ordenar el historial
 > (ver [docs/HISTORIAL.md](docs/HISTORIAL.md)). Las fechas son las del desarrollo real.
 
+## [3.4.2] - 2026-11-27
+
+### Añadido
+
+- Guía de flujo de trabajo (CONTRIBUTING), plantillas de pull request e issues, y nota sobre el historial.
+- La CI también corre al integrar en develop.
+
+### Cambiado
+
+- La licencia pasa de MIT a una licencia de código visible: se puede leer y evaluar, no reutilizar.
+- El pie de página y los términos de la app reflejan la nueva licencia.
+
 ## [3.4.1] - 2026-11-27
 
 ### Corregido
@@ -194,6 +206,7 @@ Todos los cambios relevantes de LUKA se documentan aquí. El formato sigue
 - Tutorial del primer ingreso y tema claro u oscuro.
 - Cuentas de usuario con Supabase Auth; despliegue en Vercel.
 
+[3.4.2]: https://github.com/S3scobar/luka-finanzas/compare/v3.4.1...v3.4.2
 [3.4.1]: https://github.com/S3scobar/luka-finanzas/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/S3scobar/luka-finanzas/compare/v3.2.0...v3.3.0
