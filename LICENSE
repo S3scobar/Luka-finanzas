@@ -1,0 +1,55 @@
+LUKA — Licencia de código visible (source-available)
+
+Copyright (c) 2026 Santiago Escobar. Todos los derechos reservados.
+
+Este repositorio es público para que pueda ser leído y evaluado (por ejemplo,
+por equipos de selección de personal o revisores técnicos). NO es software
+libre ni de código abierto.
+
+SE PERMITE
+  - Ver, leer y clonar el código para evaluarlo o revisarlo.
+  - Ejecutarlo localmente, solo con fines de evaluación personal y sin ánimo
+    de lucro.
+
+NO SE PERMITE, sin permiso previo y por escrito del titular
+  - Copiar, modificar, fusionar, publicar, distribuir, sublicenciar o vender
+    el código o partes de él.
+  - Crear obras derivadas.
+  - Usarlo, total o parcialmente, en un producto o servicio, comercial o no.
+  - Usar el nombre LUKA, su logotipo, sus iconos o su identidad visual.
+
+El software se proporciona «tal cual», sin garantía de ningún tipo.
+
+Los componentes de terceros (SvelteKit, Svelte, Vite, supabase-js, Phosphor
+Icons, Font Awesome y otras dependencias) conservan sus propias licencias.
+
+Contacto para permisos: https://github.com/S3scobar
+
+----------------------------------------------------------------------------
+
+LUKA — Source-available license
+
+Copyright (c) 2026 Santiago Escobar. All rights reserved.
+
+This repository is public so that it can be read and evaluated (for example,
+by hiring teams or technical reviewers). It is NOT free or open-source
+software.
+
+PERMITTED
+  - Viewing, reading and cloning the code for evaluation or review.
+  - Running it locally for personal, non-commercial evaluation only.
+
+NOT PERMITTED without the owner's prior written permission
+  - Copying, modifying, merging, publishing, distributing, sublicensing or
+    selling the code or any part of it.
+  - Creating derivative works.
+  - Using it, in whole or in part, in any product or service, commercial or
+    not.
+  - Using the LUKA name, logo, icons or visual identity.
+
+The software is provided "as is", without warranty of any kind.
+
+Third-party components (SvelteKit, Svelte, Vite, supabase-js, Phosphor Icons,
+Font Awesome and other dependencies) keep their own licenses.
+
+Contact for permissions: https://github.com/S3scobar
